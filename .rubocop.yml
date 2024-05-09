@@ -1,0 +1,45 @@
+AllCops:
+  DisabledByDefault: true
+
+Layout/IndentationConsistency:
+  EnforcedStyle: indented_internal_methods
+
+Layout/IndentationWidth:
+  Width: 2
+
+Style/MethodDefParentheses:
+  EnforcedStyle: require_parentheses
+
+Naming/MethodName:
+  EnforcedStyle: snake_case
+
+Naming/VariableName:
+  EnforcedStyle: snake_case
+
+Naming/VariableNumber:
+  EnforcedStyle: normalcase
+
+Lint/AssignmentInCondition:
+  AllowSafeAssignment: true
+
+Layout/BlockAlignment:
+  EnforcedStyleAlignWith: either
+
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: keyword
+  AutoCorrect: false
+
+Layout/DefEndAlignment:
+  EnforcedStyleAlignWith: start_of_line
+  AutoCorrect: false
+
+Lint/InheritException:
+  EnforcedStyle: runtime_error
+
+Lint/UnusedBlockArgument:
+  IgnoreEmptyBlocks: true
+  AllowUnusedKeywordArguments: false
+
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: false
+  IgnoreEmptyMethods: true
