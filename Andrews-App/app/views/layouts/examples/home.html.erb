@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Exercise</title>
+    <%= stylesheet_link_tag "home" %>
+    <script src="home.js" defer></script>
+  </head>
+  <body>
+
+    <img class="bg" src="https://images.unsplash.com/photo-1469521669194-babb45599def?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+
+    <div class="main_page">
+        <div class="top_bar">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#nav" class="Nav_link">Navigation</a></li>
+                <li><a class="open_modal" href="#quote">Quote of the Day</a></li>
+                <li><a href="#more">More</a></li>
+                <li><a href="#sticky" class="hamburger">&#8801</a></li>
+            </ul>
+        </div>
+
+
+        <h1>Week 5 Day 4 Lesson 4: JavaScript Interactivity</h1>
+
+        <h2>How did it go?</h2>
+            <p>
+                Pretty well! This page has multiple features, which can be found by pressing "Navigation", "Quote of the Day", or the hamburger icon. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsa ullam incidunt odio deserunt sapiente deleniti rem reiciendis in culpa fugit exercitationem quam saepe iure quae, magnam sint maxime dolores ipsam!
+                </p>
+
+        <h2>How long did it take?</h2>
+            <p>
+                Thanks for asking, I started in the morning just before Lorem, ipsum doloor sit amett consectetur adipisicing elit. I worked all the way until Ipsa ullam incidunt odio deserunt sapiente deleniti rem reiciendis in culpa fugit exercitationem quam saepe iure quae, magnam sint maxime dolores ipsam!
+                Harum rem quisquam expedita! Cumque in provident eum sapiente quidem harum odit ea repellendus dignissimos est, exercitationem voluptatibus animi nihil necessitatibus ipsam unde hic natus adipisci a tenetur. Harum, ducimus.
+                
+            </p>
+
+        <h2>Extra Content</h2>
+            <p>
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ipsa ullam incidunt odio deserunt sapiente deleniti rem reiciendis in culpa fugit exercitationem quam saepe iure quae, magnam sint maxime dolores ipsam!
+                Harum rem quisquam expedita! Cumque in provident eum sapiente quidem harum odit ea repellendus dignissimos est, exercitationem voluptatibus animi nihil necessitatibus ipsam unde hic natus adipisci a tenetur. Harum, ducimus.
+            </p>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 class="quote">Quote of the Day:</h2>
+            <p class="quote">"The only person you are destined to become is the person you decide to be."<br> <strong>— Ralph Waldo Emerson</strong></div>
+    </div>
+
+    <!-- The overlay -->
+    <div id="myNav" class="overlay">
+
+    <!-- Button to close the overlay navigation -->
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+
+    <!-- Overlay content -->
+    <div class="overlay-content">
+    <a href="#">About</a>
+    <a href="#">Services</a>
+    <a href="#">Clients</a>
+    <a href="#">Contact</a>
+    <a href="#">Careers</a>
+    </div>
+
+
+
+  </body>
+</html>

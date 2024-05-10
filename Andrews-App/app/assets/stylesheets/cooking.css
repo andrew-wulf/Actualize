@@ -1,0 +1,87 @@
+body {
+  background-color: rgba(240, 240, 240, 0.906);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 400;
+}
+
+h1 {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 90px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  background-color: rgba(238, 100, 31, 0.7);
+  border-radius: 2%;
+  text-align: center;
+  position: relative;
+}
+
+h1:hover {
+  opacity: 90%;
+}
+
+.intro {
+  font-size: 25px;
+  font-weight: 500;
+  padding-bottom: 2.5%
+}
+
+
+
+.rolls {
+  padding-top: 10%;
+  position: relative;
+}
+
+.dough {
+  block-size: 30%;
+  position: relative;
+  max-width: 23%;
+}
+
+.img_text {
+  position: absolute;
+  bottom: 50%;
+  left: 65%;
+  font-size: 40px;
+  font-weight: 600;
+  opacity: 0%;
+}
+
+.dough>.img_text {
+  bottom: 40%;
+  left: 38%;
+  white-space: nowrap;
+}
+
+.rolls:hover>img,
+.dough:hover>img {
+  opacity: 60%;
+  cursor: crosshair;
+}
+
+div:hover>.img_text {
+  opacity: 100%;
+  transition: .35s;
+}
+
+
+.container1 {
+  display: grid;
+  grid-template-columns: 60% 25%;
+  gap: 0%;
+}
+
+.container2 {
+  border-bottom: dotted 10px;
+  border-color: rgba(12, 12, 12, 0.73);
+}
+
+.container3 {
+  padding-top: 2%;
+}
+
+.container1:hover,
+.container2:hover,
+.container3:hover {
+  background-color: rgba(232, 232, 232, 0.906)
+}
