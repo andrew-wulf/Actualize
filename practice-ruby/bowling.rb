@@ -154,3 +154,5 @@ demo
 
 
 #score method -- loop backwards through the score. If a frame is a strike, add 10 to 2 previous frames if they exist. If a frame is a spare, add 10 to 1 previous frame. After this is done, add up the sum of all the numbers.
+
+#I misunderstood the rules of bowling, so the main difference was

@@ -1,0 +1,2 @@
+class SiteData < ApplicationRecord
+end
