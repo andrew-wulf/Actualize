@@ -40,9 +40,9 @@ class Movie_Battle
   #Connect to local sqlite db for api keys
   def initialize
     mac_path = "/Users/awulf/API_Keys/api_keys.db"
-    win_path = ""
+    win_path = "C:\\Users\\chess\\VS Projects\\API_Keys\\api_keys.db"
 
-    db = SQLite3::Database.new(mac_path)
+    db = SQLite3::Database.new(win_path)
     res = db.execute("select api_key1, api_key2 from API_Keys WHERE service = ?", 'themoviedb').first
 
     @access_token = res[1]
@@ -95,8 +95,9 @@ class Movie_Battle
     running = true
     
 
+    puts "enter first movie:"
 
-    movie_to_match = 'dune 2'
+    movie_to_match = gets.chomp
     current_data = movie_data(movie_to_match)
     movies = [movie_to_match]
 
@@ -148,6 +149,7 @@ class Movie_Battle
         else
           puts "No links found."
           pp challenger
+          pp current_data
           winner = opp
           running = false
         end
@@ -157,7 +159,6 @@ class Movie_Battle
     puts "\n\n | #{winner} wins! |"
     puts "\nMovie streak: #{movies.length}"
   end
-
 
 
   #the search method validates that the input has a valid entry in moviedb, and returns the id of the match.
