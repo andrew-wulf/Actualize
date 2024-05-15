@@ -26,13 +26,6 @@ require 'sqlite3'
 require 'titlecase'
 
 
-def input
-  comm = gets.chomp
-  if comm.downcase == 'exit'
-    abort('Exiting program.')
-  end
-  return comm
-end
 
 
 class Movie_Battle
@@ -52,11 +45,32 @@ class Movie_Battle
     @base_url = 'https://api.themoviedb.org/3'
   end
 
+  def input
+    comm = gets.chomp
+    while comm.downcase == 'exit' || comm.downcase == 'help'
+      if comm.downcase == 'exit'
+        abort('Exiting program.')
+      else
+        display_links
+        comm = gets.chomp
+      end
+    end
+    return comm
+  end
+
+
+  def display_links
+    puts "Used links:\n\n"
+    for link in @used_links.keys
+      puts "#{link} " + ("X " * @used_links[link])
+    end
+  end
+
 
   #new game method refreshes all variables and starts a new match.
   def new_game
 
-    @players, @used_links = {}, []
+    @players, @used_links = {}, {}
     puts "Welcome to trivia battle!"
     puts "Enter the name for Player 1:"
     name1 = input.titlecase
@@ -78,12 +92,25 @@ class Movie_Battle
       puts "\n#{pl} will go first."
       puts "#{pl}, pick three actors to ban for the other player."
 
-      3.times do
-        actor = search(input, type='person')
-        if actor
-          @players[pl][:bans].push(actor['name'])
+
+      #TEMPORARY---------------------------------------------
+      actor = search('Tom Cruise', type='person')
+      actor2 = search('Tom Holland', type='person')
+      actor3 = search('Tom Hanks', type='person')
+
+      for a in [actor, actor2, actor3]
+        if a
+          @players[pl][:bans].push(a['name'])
         end
       end
+      #-------------------------------------------------------
+
+      # 3.times do
+      #   actor = search(input, type='person')
+      #   if actor
+      #     @players[pl][:bans].push(actor['name'])
+      #   end
+      # end
     end
 
     for pl in [first, second]
@@ -126,23 +153,35 @@ class Movie_Battle
           puts"Name a movie to link with \'#{movie_to_match}\'."
         end
         
-        guess = input.titlecase
-        
-        if guess == 'exit'
-          winner = opp
-          running = false
-        end
-          
-        if not search(guess)
-          puts "Invalid guess, give it 1 more try!"
+
+        while true
+          pp 1
           guess = input.titlecase
+          info = self.search(guess, type='movie')
+
+          if not info
+            puts "Invalid guess, try again."
+            guess = input.titlecase
+          elsif movies.include?(info['title'])
+            puts "#{info['title']} (#{info['release_date'][...4]}) has already been guessed, try again."
+          else
+            break
+          end
         end
 
         challenger = movie_data(guess)
+        
+        blacklist = @players[opp][:bans]
+        @used_links.keys.each do |link|
+          if @used_links[link] >= 3
+            blacklist.push(link)
+          end
+        end
 
-        res = compare_movies(current_data, challenger)
+        res = compare_movies(current_data, challenger, blacklist=blacklist)
         if res
-          puts "\nLink! --- #{res[0]} (#{res[1]}) | used: X X X"
+          new_link(res[0])
+          puts "\nLink! --- #{res[0]} (#{res[1]}, #{res[2]}) | used: " + ("X " * @used_links[res[0]])
           movie_to_match, current_data = challenger[:info][0], challenger
           movies.push(movie_to_match)
         else
@@ -158,7 +197,13 @@ class Movie_Battle
     puts "\nMovie streak: #{movies.length}"
   end
 
-
+  def new_link(person)
+    if @used_links.include?(person)
+      @used_links[person] += 1
+    else
+      @used_links[person] = 1
+    end
+  end
 
   #the search method validates that the input has a valid entry in moviedb, and returns the id of the match.
   def search(term, type='movie')
@@ -238,6 +283,7 @@ class Movie_Battle
     if not blacklist
       blacklist = []
     end
+    pp blacklist
 
     info = movie2_data[:info]
 
@@ -250,20 +296,20 @@ class Movie_Battle
 
       for person in movie1_data[key]
         if key == :cast
-          person = person[0]
+          person, role = person[0], person[1]
         end
 
         for title in [:director, :screenplay, :cinematographer, :composer, :editor]
           for crew in movie2_data[title]
             if crew == person && blacklist.none? {|n| n == crew}
-              return [crew, title.to_s]
+              return [crew, key, title.to_s]
             end
           end
         end
 
         for actor in movie2_data[:cast]
           if actor[0] == person && blacklist.none? {|n| n == actor[0]}
-            return actor
+            return [actor[0], role, actor[1]]
           end
         end
       end
