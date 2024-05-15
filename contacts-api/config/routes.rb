@@ -8,7 +8,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 
-  #get "/home", controller: "site_data", action: "contacts"
-  get "/home", controller: "contacts", action: "show"
+  get "/index", controller: "contacts", action: "index"
+  get "/show", controller: "contacts", action: "show"
+  get "/contacts", controller: "contacts", action: "contacts"
+  get "/challenge", controller: "contacts", action: "challenge"
 
 end

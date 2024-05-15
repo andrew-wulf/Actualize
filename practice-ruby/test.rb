@@ -49,11 +49,33 @@ class Test3
   end
 end
 
-test = Test.new({apple: 3, pear: 4, kiwi: 5})
-test.display
 
-test2 = Test2.new(5, apple=3, pear=4)
-test2.display
+def test4
+  require "faker"
 
-test3 = Test3.new(5, apple=3, pear=4)
-test3.display
+
+  generator = Faker::Commerce
+
+  50.times do
+    name = generator.product_name
+    price = (generator.price(range:0...300) * 100).to_i
+    dep = generator.department(max: 3)
+    
+    deps = dep.split(/, | & /)
+    
+
+    num = rand(60)
+    if num > 40
+      sale = rand(0...45)
+    else
+      sale = 0
+    end
+    url = nil
+    desc = "This #{generator.color} #{name}, developed by #{generator.brand}, was made in #{Faker::Address.country} only using the finest #{generator.material}!"
+
+    p [name, price, deps, sale, url, desc]
+  end
+end
+
+
+test4
