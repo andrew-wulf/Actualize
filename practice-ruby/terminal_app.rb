@@ -1,31 +1,15 @@
-#IDEAS
-
-
-#Sports
-
-
-#Translator app
-
-#Meetup
-
-
-
-#NFL
-#Given a team, return their hardest opponents based on power rankings and head-to-head matchups.
-
-
-#Name that actor or movie!
-
-#If you don't know someone's name but know what they're in, enter in productions they've been a part of to narrow the search
-
 
 require 'uri'
 require 'net/http'
 require 'json'
 require 'sqlite3'
 require 'titlecase'
+require 'faker'
 
-
+# Movie Battle! 
+# The point of the game is to name successive movies that are linked by prominent cast or crew members.
+# Each player can ban 3 people for their opponent at the start of the match.
+# No movie can be used twice, and lniks can only be used up to three times.
 
 
 class Movie_Battle
@@ -68,15 +52,21 @@ class Movie_Battle
 
 
   #new game method refreshes all variables and starts a new match.
-  def new_game
+  def new_game(bans: true, random: true, test_run: false)
 
     @players, @used_links = {}, {}
-    puts "Welcome to trivia battle!"
-    puts "Enter the name for Player 1:"
-    name1 = input.titlecase
-    puts "Enter the name for Player 2:"
-    name2 = input.titlecase
+    pp [bans, random, test_run]
 
+    puts "\nWelcome to Movie battle!\n\nThe point of the game is to name successive movies that are linked by prominent cast or crew members.\nEach player can ban 3 people (AKA links) for their opponent at the start of the match.\nNo movie can be used twice, and links can only be used up to three times."
+
+    if test_run
+      name1, name2 = "player 1", "player 2"
+    else
+      puts "\nEnter the name for Player 1:"
+      name1 = input.titlecase
+      puts "Enter the name for Player 2:"
+      name2 = input.titlecase
+    end
 
     num = rand(0..1)
     if num == 0
@@ -92,25 +82,25 @@ class Movie_Battle
       puts "\n#{pl} will go first."
       puts "#{pl}, pick three actors to ban for the other player."
 
+      if test_run
+        actor = search('Tom Cruise', type='person')
+        actor2 = search('Tom Holland', type='person')
+        actor3 = search('Tom Hanks', type='person')
 
-      #TEMPORARY---------------------------------------------
-      actor = search('Tom Cruise', type='person')
-      actor2 = search('Tom Holland', type='person')
-      actor3 = search('Tom Hanks', type='person')
+        for a in [actor, actor2, actor3]
+          if a
+            @players[pl][:bans].push(a['name'])
+          end
+        end
 
-      for a in [actor, actor2, actor3]
-        if a
-          @players[pl][:bans].push(a['name'])
+      elsif bans
+        3.times do
+          actor = search(input, type='person')
+          if actor
+            @players[pl][:bans].push(actor['name'])
+          end
         end
       end
-      #-------------------------------------------------------
-
-      # 3.times do
-      #   actor = search(input, type='person')
-      #   if actor
-      #     @players[pl][:bans].push(actor['name'])
-      #   end
-      # end
     end
 
     for pl in [first, second]
@@ -121,26 +111,35 @@ class Movie_Battle
     prev = nil
     running = true
     
+    if random || test_run
+      movie_to_match = Faker::Movie.title
+    else
+      puts "\nenter first movie:"
+      movie_to_match = gets.chomp
+    end
 
-    puts "enter first movie:"
-
-    movie_to_match = gets.chomp
     current_data = movie_data(movie_to_match)
     movies = [movie_to_match]
 
     puts "\nStarting Game!" 
+    puts "(to help you get started, notable cast & crew from the first movie will be listed.)"
 
 
     while running
-      info = current_data[:info]
-      pretty_title = "----- #{info[0]} (#{info[1]}) -----"
-
-      puts "\n\n#{pretty_title}"
-
-      #puts "--- Round #{round} ---"
       for player in [first, second]
         if not running
           break
+        end
+
+        info = current_data[:info]
+        pretty_title = "----- #{info[0]} (#{info[1]}) -----"
+        puts "\n#{pretty_title}"
+
+        if movies.length == 1
+          puts "Director: #{current_data[:director][0]}"
+          puts "Screenplay: #{current_data[:screenplay][0]}"
+          actors = current_data[:cast][...5].map {|arr| arr[0]}.join(', ')
+          puts "Notable actors: #{actors}\n"
         end
 
         if player == first
@@ -156,7 +155,6 @@ class Movie_Battle
         
 
         while true
-          pp 1
           guess = input.titlecase
           info = self.search(guess, type='movie')
 
@@ -182,21 +180,21 @@ class Movie_Battle
         res = compare_movies(current_data, challenger, blacklist=blacklist)
         if res
           new_link(res[0])
-          puts "\nLink! --- #{res[0]} (#{res[1]}, #{res[2]}) | used: " + ("X " * @used_links[res[0]])
+          puts "\nLink! --- #{res[0]} (#{res[2]}) | used: " + ("X " * @used_links[res[0]])
           movie_to_match, current_data = challenger[:info][0], challenger
           movies.push(movie_to_match)
         else
-          puts "No links found."
-          pp challenger
-          pp current_data
+          puts "No links found for #{challenger[:info][0]} (#{challenger[:info][1]})."
+          #pp challenger
+          #pp current_data
           winner = opp
           running = false
         end
       end
     end
 
-    puts "\n\n | #{winner} wins! |"
-    puts "\nMovie streak: #{movies.length}"
+    puts "\n*****   |   #{winner} wins!   |   *****"
+    puts "\nMovie streak: #{movies.length}\n-------------------------------------------------"
   end
 
   def new_link(person)
@@ -285,11 +283,11 @@ class Movie_Battle
     if not blacklist
       blacklist = []
     end
-    pp blacklist
+    #pp blacklist
 
     info = movie2_data[:info]
 
-    puts "\n----- #{info[0]} (#{info[1]}) -----"
+    #puts "\n----- #{info[0]} (#{info[1]}) -----"
 
 
     i = 1
@@ -328,11 +326,9 @@ end
 
 
 
-
-
 def demo
   engine = Movie_Battle.new
-  engine.new_game
+  engine.new_game()
 end
 
 
