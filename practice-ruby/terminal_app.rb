@@ -56,6 +56,7 @@ class Movie_Battle
       end
     end
 
+    #I barely understand this part but it's giving consistent results and I'm going with it
     begin
       Timeout.timeout(secs) do
         input, _, _ = IO.select([$stdin], nil, nil, secs)
@@ -92,6 +93,9 @@ class Movie_Battle
 
     puts "\nWelcome to Movie battle!\n\nThe point of the game is to name successive movies that are linked by prominent cast or crew members.\n\nEach player can ban 3 people (AKA links) for their opponent at the start of the match.\nNo movie can be used twice, and links can only be used up to three times. \n\nInputs have a 40 second timer."
 
+    puts "Press Enter to start the game!"
+    gets
+
     if test_run
       name1, name2 = "player 1", "player 2"
     else
@@ -110,9 +114,9 @@ class Movie_Battle
       @players[name1] = {points: 0, bans: []}
     end
     first, second = @players.keys.first, @players.keys.last
+    puts "\n#{first} will go first."
 
     for pl in [first, second]
-      puts "\n#{pl} will go first."
       puts "#{pl}, pick three actors to ban for the other player."
 
       if test_run
@@ -378,7 +382,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game(bans: false, random: true, test_run: false)
+  engine.new_game(bans: true, random: false, test_run: true)
 end
 
 
@@ -390,7 +394,7 @@ end
 
 
 
-
+#OLD CODE -- this is a simpler game which finds a movie in themoviedb by naming actors in it until there is one option left.
 
 class Movie_DB
   def initialize
