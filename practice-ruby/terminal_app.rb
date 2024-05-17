@@ -5,6 +5,7 @@ require 'json'
 require 'sqlite3'
 require 'titlecase'
 require 'faker'
+require 'thread'
 
 # Movie Battle! 
 # The point of the game is to name successive movies that are linked by prominent cast or crew members.
@@ -19,7 +20,7 @@ class Movie_Battle
     mac_path = "/Users/awulf/API_Keys/api_keys.db"
     win_path = "C:\\Users\\chess\\VS Projects\\API_Keys\\api_keys.db"
 
-    db = SQLite3::Database.new(win_path)
+    db = SQLite3::Database.new(mac_path)
     res = db.execute("select api_key1, api_key2 from API_Keys WHERE service = ?", 'themoviedb').first
 
     @access_token = res[1]
@@ -29,17 +30,48 @@ class Movie_Battle
     @base_url = 'https://api.themoviedb.org/3'
   end
 
+
   def input
-    comm = gets.chomp
-    while comm.downcase == 'exit' || comm.downcase == 'help'
-      if comm.downcase == 'exit'
-        abort('Exiting program.')
-      else
-        display_links
-        comm = gets.chomp
+    comm = validate
+    if comm
+      while comm.downcase == 'exit' || comm.downcase == 'help'
+        if comm.downcase == 'exit'
+          abort('Exiting program.')
+        else
+          display_links
+          comm = validate(secs: 20)
+        end
+      end
+      return comm.titlecase
+    end
+    return nil
+  end
+
+  def validate(secs: 40)
+    message = true
+    timer = Thread.new do
+      sleep((secs - 15).abs)
+      if message
+        puts "15 seconds remaining..."
       end
     end
-    return comm
+
+    begin
+      Timeout.timeout(secs) do
+        input, _, _ = IO.select([$stdin], nil, nil, secs)
+        message = false
+        if input
+          # If input is available, read it and move on
+          result = $stdin.gets.chomp  # Consume the input
+
+          return result
+        else
+          return nil
+        end
+      end
+    rescue Timeout::Error
+      return nil
+    end
   end
 
 
@@ -55,17 +87,18 @@ class Movie_Battle
   def new_game(bans: true, random: true, test_run: false)
 
     @players, @used_links = {}, {}
-    pp [bans, random, test_run]
+    
+    #pp [bans, random, test_run]
 
-    puts "\nWelcome to Movie battle!\n\nThe point of the game is to name successive movies that are linked by prominent cast or crew members.\nEach player can ban 3 people (AKA links) for their opponent at the start of the match.\nNo movie can be used twice, and links can only be used up to three times."
+    puts "\nWelcome to Movie battle!\n\nThe point of the game is to name successive movies that are linked by prominent cast or crew members.\n\nEach player can ban 3 people (AKA links) for their opponent at the start of the match.\nNo movie can be used twice, and links can only be used up to three times. \n\nInputs have a 40 second timer."
 
     if test_run
       name1, name2 = "player 1", "player 2"
     else
       puts "\nEnter the name for Player 1:"
-      name1 = input.titlecase
+      name1 = input || "Player 1"
       puts "Enter the name for Player 2:"
-      name2 = input.titlecase
+      name2 = input || "Player 2"
     end
 
     num = rand(0..1)
@@ -110,8 +143,10 @@ class Movie_Battle
 
     prev = nil
     running = true
+    timeout = false
     
     if random || test_run
+      puts "Picking random movie..."
       movie_to_match = Faker::Movie.title
     else
       puts "\nenter first movie:"
@@ -155,17 +190,29 @@ class Movie_Battle
         
 
         while true
-          guess = input.titlecase
+          guess = input
+          if not guess
+            timeout = true
+            break
+          end
+
           info = self.search(guess, type='movie')
 
           if not info
             puts "Invalid guess, try again."
-            guess = input.titlecase
+            guess = input
           elsif movies.include?(info['title'])
             puts "#{info['title']} (#{info['release_date'][...4]}) has already been guessed, try again."
           else
             break
           end
+        end
+
+        if timeout
+          puts "\nTime's up!"
+          winner = opp
+          running = false
+          break
         end
 
         challenger = movie_data(guess)
@@ -207,6 +254,9 @@ class Movie_Battle
 
   #the search method validates that the input has a valid entry in moviedb, and returns the id of the match.
   def search(term, type='movie')
+    if not term
+      return nil
+    end
 
     search_params = { 'api_key' => @api_key, 'query' => term }
 
@@ -328,7 +378,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game()
+  engine.new_game(bans: false, random: true, test_run: false)
 end
 
 
