@@ -117,7 +117,7 @@ class Movie_Battle
 
     puts "\nWelcome to Movie battle!\n\nThe point of the game is to name successive movies that are linked by prominent cast or crew members.\n\nEach player can ban 3 people (AKA links) for their opponent at the start of the match.\nRepeat movie titles cannot be used, and links can only be used up to three times. \nPlayers have 40 seconds each to make a valid guess, or they're out! \n\nEveryone has three lifelines (one-use only): \nskip = skips your turn. \ninfo = displays cast & crew of current movie. \ntime = adds 30 seconds to the timer."
     
-    if multi
+    if multi && test_run === false
       puts "\n\nHow many players? (can have 2-8)"
       players = input(secs: 300).to_i
       while players < 2 || players > 8
@@ -125,10 +125,6 @@ class Movie_Battle
       end
     end
 
-    if not test_run
-      puts "\nPress Enter to start the game!"
-      gets
-    end
 
     if test_run
       players = 2
@@ -152,13 +148,7 @@ class Movie_Battle
       end
     end
 
-    # if num == 0
-    #   @players[name1] = {points: 0, bans: [], lifelines: {skip: true, info: true, time: true}}
-    #   @players[name2] = {points: 0, bans: [], lifelines: {skip: true, info: true, time: true}}
-    # else
-    #   @players[name2] = {points: 0, bans: [], lifelines: {skip: true, info: true, time: true}}
-    #   @players[name1] = {points: 0, bans: [], lifelines: {skip: true, info: true, time: true}}
-    # end
+
     first, second = @players.keys[0], @players.keys[1]
     puts "\n#{first} will go first."
 
@@ -213,14 +203,20 @@ class Movie_Battle
       end
       movie_to_match = random_movies[return_index]
     else
-      puts "\nenter first movie:"
+      puts "\nEnter first movie:"
       movie_to_match = input(secs: 300)
     end
 
     current_data = movie_data(movie_to_match, auto: auto)
     movies = [movie_to_match]
+    puts "Selected #{movie_to_match}."
 
-    puts "\nStarting Game!" 
+    if not test_run
+      puts "\n\nPress Enter to start the game!"
+      gets
+    end
+
+    puts "\nGame Start!" 
     puts "(to help you get started, notable cast & crew from the first movie will be listed.)"
 
     def movie_info(data)
@@ -318,6 +314,7 @@ class Movie_Battle
         end
 
         if skipped
+          i +=1
           next
         elsif timeout
           puts "\nTime's up!"
