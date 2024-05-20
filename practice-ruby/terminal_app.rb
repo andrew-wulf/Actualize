@@ -107,16 +107,19 @@ class Movie_Battle
     end
   end
 
-
   #new game method refreshes all variables and starts a new match.
-  def new_game(bans: true, random: true, test_run: false, multi: true)
-    
+  def new_game(bans: true, random: true, test_run: false, multi: true, hard_mode: false)
+    @hard_mode = hard_mode
+
     @players, @used_links = {}, {}
     names = []
     #pp [bans, random, test_run]
 
     puts "\nWelcome to Movie battle!\n\nThe point of the game is to name successive movies that are linked by prominent cast or crew members.\n\nEach player can ban 3 people (AKA links) for their opponent at the start of the match.\nRepeat movie titles cannot be used, and links can only be used up to three times. \nPlayers have 40 seconds each to make a valid guess, or they're out! \n\nEveryone has three lifelines (one-use only): \nskip = skips your turn. \ninfo = displays cast & crew of current movie. \ntime = adds 30 seconds to the timer."
     
+    puts "\nCurrent game settings: Bans: #{bans} | Random starting movie: #{random} | hard mode: #{hard_mode}"
+    
+
     if multi && test_run === false
       puts "\n\nHow many players? (can have 2-8)"
       players = input(secs: 300).to_i
@@ -128,7 +131,7 @@ class Movie_Battle
 
     if test_run
       players = 2
-      name1, name2 = "player 1", "player 2"
+      names = ["player 1", "player 2"]
     else
       i = 0
       while i < players
@@ -137,6 +140,7 @@ class Movie_Battle
         i +=1
       end
     end
+    pp names
 
     i = rand(0..names.length)
   
@@ -169,14 +173,13 @@ class Movie_Battle
 
         elsif bans
           3.times do
-            actor = search(input, type='person')
+            actor = search(input, type: 'person')
             if actor
               @players[pl][:bans].push(actor['name'])
             end
           end
         end
       end
-
       for pl in [first, second]
         puts "\n\n#{pl}'s bans: "
         puts @players[pl][:bans]
@@ -268,7 +271,7 @@ class Movie_Battle
           puts"Name a movie to link with \'#{movie_to_match}\'."
         end
         
-        skipped = false
+        skipped, timeout = false, false
         secs = 40
 
         while true
@@ -333,11 +336,18 @@ class Movie_Battle
         end
 
         res = compare_movies(current_data, challenger, blacklist=blacklist)
+        
         if res
-          new_link(res[0])
-          puts "\nLink! --- #{res[0]} (#{res[2]}) | used: " + ("X " * @used_links[res[0]])
-          movie_to_match, current_data = challenger[:info][0], challenger
-          movies.push(movie_to_match)
+          if res[1] == 'blacklisted'
+            puts "LINK ALREADY USED 3 TIMES-- #{res[0]} (#{res[2]})"
+            puts "#{current_player} is out."
+            @players[current_player][:active] = false
+          else
+            new_link(res[0])
+            puts "\nLink! --- #{res[0]} (#{res[2]}) | used: " + ("X " * @used_links[res[0]])
+            movie_to_match, current_data = challenger[:info][0], challenger
+            movies.push(movie_to_match)
+          end
         else
           puts "No links found for #{challenger[:info][0]} (#{challenger[:info][1]})."
           #pp challenger
@@ -359,6 +369,16 @@ class Movie_Battle
     else
       @used_links[person] = 1
     end
+  end
+
+  def in_blacklist?(person, blacklist)
+    blacklist.each do |n| 
+      if n == person
+        #pp [n, person]
+        return true
+      end
+    end
+    return false
   end
 
   #the search method validates that the input has a valid entry in moviedb, and returns the id of the match.
@@ -473,9 +493,8 @@ class Movie_Battle
     end
     #pp blacklist
 
+    first_match = nil
     info = movie2_data[:info]
-
-    #puts "\n----- #{info[0]} (#{info[1]}) -----"
 
 
     i = 1
@@ -489,22 +508,38 @@ class Movie_Battle
 
         for title in [:director, :screenplay, :cinematographer, :composer, :editor]
           for crew in movie2_data[title]
-            if crew == person && blacklist.none? {|n| n == crew}
-              return [crew, key, title.to_s]
+            if crew == person
+              if @hard_mode
+                if self.in_blacklist?(crew, blacklist)
+                  return [crew, 'blacklisted', title.to_s]
+                elsif not first_match
+                  first_match = [crew, key, title.to_s]
+                end
+              else
+                return [crew, key, title.to_s]
+              end
             end
           end
         end
 
         for actor in movie2_data[:cast]
-          if actor[0] == person && blacklist.none? {|n| n == actor[0]}
-            return [actor[0], role, actor[1]]
+          if actor[0] == person 
+            if @hard_mode
+              if self.in_blacklist?(actor[0], blacklist)
+                return [actor[0], 'blacklisted', actor[1]]
+              elsif not first_match
+                first_match = [actor[0], role, actor[1]]
+              end
+            else
+              return [actor[0], role, actor[1]]
+            end            
           end
         end
       end
     
       i +=1
     end
-    return nil
+    return first_match
   end
 
 end
@@ -515,7 +550,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game(bans: false, random: true, test_run: false, multi: true)
+  engine.new_game(bans: false, random: false, test_run: false, multi: true, hard_mode: true)
 end
 
 
