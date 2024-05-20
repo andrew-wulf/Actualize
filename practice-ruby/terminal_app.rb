@@ -26,7 +26,7 @@ class Movie_Battle
     mac_path = "/Users/awulf/API_Keys/api_keys.db"
     win_path = "C:\\Users\\chess\\VS Projects\\API_Keys\\api_keys.db"
 
-    db = SQLite3::Database.new(win_path)
+    db = SQLite3::Database.new(mac_path)
     res = db.execute("select api_key1, api_key2 from API_Keys WHERE service = ?", 'themoviedb').first
 
     @access_token = res[1]
@@ -74,10 +74,11 @@ class Movie_Battle
         
         if input
           # If input is available, read it and move on
+          result = $stdin.gets.chomp
           begin
-            result = $stdin.gets.chomp.titlecase # Consume the input
+            result = result.titlecase # Consume the input
           rescue
-            result = ""
+            result = result
           end
           message = false
           if remaining
@@ -136,13 +137,19 @@ class Movie_Battle
       i = 0
       while i < players
         puts "\nEnter the name for Player #{i + 1}:"
-        names.push(input || "Player #{i}")
+        name = input(secs: 300) || "Player #{i}"
+        if name == ""
+          name = "Player #{i}"
+        end
+        names.push(name)
         i +=1
       end
     end
-    pp names
-
-    i = rand(0..names.length)
+    #For debugging
+    if names.include?(nil)
+      pp names
+    end
+    i = rand(0...names.length)
   
     names.length.times do
       @players[names[i]] = {active: true, bans: [], lifelines: {skip: true, info: true, time: true}}
@@ -152,8 +159,7 @@ class Movie_Battle
       end
     end
 
-
-    first, second = @players.keys[0], @players.keys[1]
+    first, second = @players.keys.first, @players.keys.last
     puts "\n#{first} will go first."
 
     if @players.length == 2
@@ -223,8 +229,12 @@ class Movie_Battle
     puts "(to help you get started, notable cast & crew from the first movie will be listed.)"
 
     def movie_info(data)
-      puts "Director: #{data[:director][0]}"
-      puts "Screenplay: #{data[:screenplay][0]}"
+      for title in [:director, :screenplay, :composer, :cinematographer, :editor]
+        if data[title][0] && data[title][0] != ""
+          puts "#{title.to_s.titlecase}: #{data[title][0]}"
+        end
+      end
+
       actors = data[:cast][...5].map {|arr| arr[0]}.join(', ')
       puts "Notable actors: #{actors}\n"
     end
@@ -550,7 +560,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game(bans: false, random: false, test_run: false, multi: true, hard_mode: true)
+  engine.new_game(bans: false, random: true, test_run: true, multi: true, hard_mode: false)
 end
 
 

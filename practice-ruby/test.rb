@@ -80,8 +80,15 @@ end
 
 
 
+def test5
+  names = ['a', 'b', 'c', 'd']
+  10.times do
+    i = rand(0...names.length)
+    pp [i, names[i]]
+  end
+end
 
-
+test5
 
 
 
