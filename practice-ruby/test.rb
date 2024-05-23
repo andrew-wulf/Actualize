@@ -88,9 +88,24 @@ def test5
   end
 end
 
-test5
 
 
+def test6
+  require 'faker'
+
+  gen1 = Faker::Name
+  10.times do
+    code = ""
+    5.times do
+      code += rand(0..9).to_s
+    end
+    phone = Faker::Base.numerify('(###) ### ####')
+
+    puts "#{gen1.first_name} #{gen1.last_name} #{gen1.name} #{"#{gen1.name.chomp}@gmail.com"} #{phone}"
+  end
+end
+
+test6
 
 
 

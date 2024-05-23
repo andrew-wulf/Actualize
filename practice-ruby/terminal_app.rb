@@ -560,7 +560,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game(bans: false, random: true, test_run: true, multi: true, hard_mode: false)
+  engine.new_game(bans: false, random: true, test_run: false, multi: true, hard_mode: false)
 end
 
 
