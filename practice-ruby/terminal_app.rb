@@ -13,12 +13,6 @@ require 'thread'
 # No movie can be used twice, and lniks can only be used up to three times.
 
 
-#------- FINAL ADDITION ----------
-# instead of links simply being unusable, forbid any matches between movies containing a link in the blacklist array.
-# To accomplish this, set a results variable to nil and only set it's value to a match if it's previous value was nil.
-# then, keep iterating through the data to check for blacklist matches. Any match = deny the connection and the guesser is out. 
-# Players should also be able to disable this feature.
-
 class Movie_Battle
 
   #Connect to local sqlite db for api keys
@@ -560,7 +554,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game(bans: false, random: true, test_run: false, multi: true, hard_mode: false)
+  engine.new_game(bans: false, random: true, test_run: false, multi: true, hard_mode: true)
 end
 
 
