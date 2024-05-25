@@ -6,9 +6,13 @@ import './App.css'
 function App() {
   const [count, setCount] = useState(0)
   const [heading, setHeading] = useState('Home Page')
+  const [output, setOutput] = useState("")
+  const [input, setInput] = useState("slow")
+
 
   const react = document.getElementById("react")
   const vite = document.getElementById("vite")
+  const symbol = document.getElementsByClassName("logo react")[0]
 
   function button_press() {
     setCount((count) => count + 1);
@@ -36,17 +40,64 @@ function App() {
       }
     }
   }
+  
+  function submit(e) {
+    
+    e.preventDefault();
+    setOutput(input)
 
+    if (input === "slow") {
+      symbol.style.animationIterationCount = 'unset';
+      symbol.id = "slow";
+      symbol.style.animationIterationCount = 'infinite';
+    }
+    if (input === "medium") {
+      symbol.style.animationIterationCount = 'unset';
+      symbol.id = "medium";
+      symbol.style.animationIterationCount = 'infinite';
+    }
+    if (input === "fast") {
+      symbol.style.animationIterationCount = 'unset';
+      symbol.id = "fast";
+      symbol.style.animationIterationCount = 'infinite';
+    }
+  }
+
+  // function countdown() {
+  //   running = true;
+  //   setTimeout(() => {
+  //     let secs = localStorage.getItem('timerValue'); // Parse the value as an intege
+  //     secs--;
+  //     document.getElementById('timer').innerHTML = secs;
+  //     localStorage.setItem('timerValue', secs)
+  //     //console.log(time_left)
+
+  //     if (secs > 0) {
+  //       countdown()
+  //     }
+  //     else {
+  //       self_destruct()
+  //     }
+  //   }, 2000);
+    
+  // }
+  
+  // function self_destruct() {
+  //   localStorage.setItem('timerValue', 60)
+  //   let body = document.getElementById("main")
+  //   body.style.display = "none"
+  // }
 
 
   return (
     <>
-      <div>
+      <div id="main">
+        <div>
         <a href="https://vitejs.dev" target="_blank" id="vite" className='false'>
           <img src={viteLogo} className="logo" alt="Vite logo"/>
         </a>
         <a href="https://react.dev" target="_blank" id="react" className='false'>
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          <img src={reactLogo} className="logo react" alt="React logo" id="slow"/>
         </a>
       </div>
       <h1>{heading}</h1>
@@ -54,13 +105,26 @@ function App() {
         <button onClick={() => button_press()} >
           count is {count}
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+        <form method="post" onSubmit={submit}>
+          <label>
+          Atom Speed: <input name="myInput" value={input} onChange={e => setInput(e.target.value)} />
+          </label>
+          <div>
+          <button>
+            Submit!
+          </button>
+          </div>
+        </form>
+
       </div>
       <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
+        Time until page self-destructs:
       </p>
+      <p id="timer">
+      60 seconds
+      </p>
+      </div>
     </>
   )
 }
