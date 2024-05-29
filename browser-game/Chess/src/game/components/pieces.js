@@ -118,12 +118,12 @@ export class Piece extends GameObjects.Image {
         i++;
       }
       
-      console.log(`Piece: ${this.type} | Current Square: ${curr_square}`)
+      
       
 
       if (curr_square !== null) {
         let curr = squares[curr_square];
-        console.log(curr.row, curr.col);
+        console.log(`Piece: ${this.type} | Current Square: ${curr_square} | RowCol: ${[curr.row, curr.col]}`)
 
         squares.forEach((sq, i) => {
           if (this.type.includes('p')) {
@@ -138,7 +138,7 @@ export class Piece extends GameObjects.Image {
 
             if (sq.col == curr.col) {
               if (sq.row == curr.row + diff || (sq.row == curr.row + (diff * 2) && curr.row == start_row)) {
-                legal_moves.push(i)
+                legal_moves.push(sq)
               }
             }
           }
@@ -147,69 +147,157 @@ export class Piece extends GameObjects.Image {
 
           if (this.type.includes('r')) {
             if (sq.col == curr.col || sq.row == curr.row) {
-              legal_moves.push(i)
+              legal_moves.push(sq)
             }
           }
 
           
           if (this.type.includes('k')) {
             if (Math.abs(sq.col - curr.col) < 2 && Math.abs(sq.row - curr.row) < 2) {
-              legal_moves.push(i)
+              legal_moves.push(sq)
             }
           }
 
           if (this.type[1] == 'b') {
             if (Math.abs(sq.col - curr.col) == Math.abs(sq.row - curr.row)) {
-              legal_moves.push(i)
+              legal_moves.push(sq)
             }
           }
 
           if (this.type.includes('q')) {
             if ((sq.col == curr.col || sq.row == curr.row) || (Math.abs(sq.col - curr.col) == Math.abs(sq.row - curr.row))) {
-              legal_moves.push(i)
+              legal_moves.push(sq)
             }
           }
 
           if (this.type.includes('n')) {
             if ((Math.abs(sq.col - curr.col) == 2 && Math.abs(sq.row - curr.row) == 1) || (Math.abs(sq.row - curr.row) == 2 && Math.abs(sq.col - curr.col) == 1)) {
-              legal_moves.push(i)
+              legal_moves.push(sq)
             }
           }
 
 
         });
-      }
 
-
-      let validated_moves = [];
-      legal_moves.forEach(i => {
-        let sq = squares[i];
-        let pc = sq.get_piece(this.scene);
-        if (pc === false) {
-          validated_moves.push(i);
-        }
-        else {
-          console.log(sq.row, sq.col, pc.type)
-
-          if (pc.type[0] != this.type[0]) {
-            validated_moves.push(i)
-          }
-        }
-      });
+        let validated_moves = [];
+        let occupied_squares = [];
   
-      //NEXT STEP: for queens rooks and bishops, if the abs val of the difference in rows cols is greater than a square with a piece on it, no validation. Also, the final legal_moves arr might need to have value pairs for the nice highlights: [index, collision true or false]
+        legal_moves.forEach(sq => {
+          // console.log(sq)
+          let pc = sq.get_piece(this.scene);
+          if (pc === false) {
+            validated_moves.push([sq, false]);
+          }
+  
+          else {
+            occupied_squares.push([sq, pc.type]);
+  
+            if (pc.type[0] !== this.type[0]) {
+              validated_moves.push([sq, true]);
+            }
+          }
+        });
+  
+        //NEXT STEP: for queens rooks and bishops, if the abs val of the difference in rows cols is greater than a square with a piece on it, no validation. Also, the final legal_moves arr might need to have value pairs for the nice highlights: [index, collision true or false]
+  
+       // console.log('Legal Moves:')
+       // console.log(legal_moves.map(sq => [sq.row, sq.col]));
+       // console.log('Occupied Squares:')
+       // console.log(occupied_squares.map(arr => [arr[0].row, arr[0].col, arr[1]]));
+  
+  
+        if (this.type[1] !== 'n') {
+  
+          occupied_squares.forEach((arr) => {
+            let sq = arr[0];
+            let type = arr[1];
+            console.log('blocked square ' + [sq.row, sq.col])
+            //Horizontal blocked moves
+            if (sq.col == curr.col || sq.row == curr.row) {
 
-      console.log(legal_moves)
-      this.legal_moves = validated_moves;
+              let anchor = curr.row;
+              let anchor_type = 'row';
+              let line1 = curr.col;
+              let line2 = sq.col
+              
+
+              if (sq.col == curr.col) {
+                anchor = curr.col;
+                anchor_type = 'col'
+                line1 = curr.row;
+                line2 = sq.row;
+              }
+
+              console.log(`anchor: ${anchor} line1: ${line1} line2: ${line2}`)
+              let diff = line1 - line2
+
+              if (diff > 1) {
+                for (let i = line2 - 1; i > -1; i--) {
+                  let x = anchor;
+                  let y = i;
+
+                  if (anchor_type == 'col') {
+                    x = i;
+                    y = anchor;
+                  }
+                  console.log(x, y)
+                  let blocked_index = this.get_index(x, y);
+                  this.drop_move(validated_moves, blocked_index)
+                }
+              }
+              else {
+                for (let i = line2 + 1; i < 8; i++) {
+                  let blocked_index = this.get_index(i, line1);
+                  this.drop_move(validated_moves, blocked_index)
+                }
+              }
+
+            }
+
+          });
+        
+  
+           // console.log(`removing at index ${i}`);
+           // this.drop_move(validated_moves, sq.i);
+        }
+    
+        console.log('Validated Moves:')
+        console.log(validated_moves.map(arr => [arr[0].row, arr[0].col, arr[1]]));
+        this.legal_moves = validated_moves;  
+
+      }
     }
   
 
+
     show_moves() {
       this.setTint(0x1228b5);
-      this.legal_moves.forEach((i) => {
-        let hex = '0x1228b5'
-        this.scene.squares[i].set_color(hex, hex, this.scene.graphics)
+      // console.log(this.legal_moves)
+      this.legal_moves.forEach(arr => {
+        let sq = arr[0];
+        let occupied = arr[1];
+        //let hex = '0x1228b5';
+        let hex = 0x2b39cf;
+
+        if (occupied === true) {
+          hex = '0xc93232';
+        }
+
+        sq.set_color(hex, hex, this.scene.graphics)
       });
+    }
+
+    drop_move(moves, i) {
+      moves.forEach((move, index) => {
+        if (move.i == i) {
+          moves.splice(index, 1);
+          return
+        }
+      })
+    }
+
+    get_index(row, col) {
+      return (8 * row) + col
     }
   }
 

@@ -86,6 +86,7 @@ export class Square extends Geom.Rectangle {
   set_label(row, col) {
     this.row = row;
     this.col = col;
+    this.i = (row * 8) + col;
   }
 
   get_piece(scene) {
