@@ -21,8 +21,14 @@ export class Game extends Scene
         this.cameras.main.setBackgroundColor('rgba(25, 25, 25, 1)');
 
         this.graphics = this.add.graphics();
-        this.rectangles = board(this);
+        this.squares = board(this);
         this.pieces = pieces(this);
+
+        //refresh selections on click
+        this.input.on('pointerdown', function (pointer) {
+            this.scene.reset_selections()
+        });
+
 
         EventBus.emit('current-scene-ready', this);
     }
@@ -35,11 +41,13 @@ export class Game extends Scene
     }
 
 
+    reset_selections() {
+        this.squares.forEach(sq => {sq.reset() 
+        });
 
-    rect_center(rect) {
-        let x = rect.left + ((rect.width - rect.left) / 2);
-        let y = rect.top + ((rect.height - rect.top) / 2);
-        return [x, y]
+        this.pieces.forEach(pc => {
+            pc.clearTint()
+        });
     }
 
 
