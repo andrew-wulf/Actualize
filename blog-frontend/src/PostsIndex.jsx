@@ -5,20 +5,23 @@ export function PostsIndex(props) {
 
       <div className="posts">
         {props.posts.map(
-          function (post) {
+          function (post, i) {
+            let bg = 'dark';
+            if (i == 0 || i % 2 == 0) {
+              bg = 'light';
+            }
             return (
-              <div key={post.id}>
+              <div key={post.id} name={bg}>
                 <h2>{post.title}</h2>
                 
                 <div className="body">
                   <div>
-                    <h3>{post.body}</h3>
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Amet doloremque dolorem nihil placeat, pariatur ullam, qui excepturi rerum reprehenderit voluptates facere at id cumque. Cumque vel commodi suscipit veritatis rem!</p>
+                    
+                    <p>{post.body}</p>
 
-                    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Maiores ex soluta sunt illo, inventore sit facilis exercitationem? Adipisci, illum? Officiis facilis vero pariatur porro beatae quas exercitationem quidem amet necessitatibus!</p>
                   </div>
                 
-                  <img src={post.image}></img>
+                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiEkqUCXEbnnT0SseSO2KfYlKzsL-TvxorVQ&s"></img>
                 </div>
               </div>
             );

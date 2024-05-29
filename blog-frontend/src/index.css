@@ -1,4 +1,9 @@
 
+@font-face {
+  font-family: "Raleway";
+  src: local('Raleway-VariableFont_wght'), url("./fonts/Raleway-VariableFont_wght.ttf") format("truetype");
+}
+
 
 html {
   scroll-behavior: smooth;
@@ -8,7 +13,8 @@ html {
   max-width: 100vw;
   padding-top: 1em;
   padding-bottom: 1em;
-  background-color: #0c0c0d;
+  background: rgb(6,1,91);
+  background: linear-gradient(90deg, rgba(6,1,91,1) 0%, rgba(78,78,190,1) 39%, rgba(66,76,205,1) 70%, rgba(160,0,255,1) 100%);
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
@@ -20,16 +26,16 @@ html {
 }
 
 .header a:hover {
-  color: rgb(255, 255, 255)
+  color: rgb(250, 250, 250)
 }
 
 
 body {
-  background-color: rgb(30, 30, 30);
-  color: rgb(216, 216, 216);
+  background-color: rgb(255, 255, 255);
+  color: rgb(71, 85, 105);
   margin: 0 0.8em;
   
-font-family: Georgia, 'Times New Roman', Times, serif;
+font-family: 'Raleway';
 opacity: 100%;}
 
 
@@ -47,17 +53,19 @@ opacity: 100%;}
 
 h1 {max-width: 50vw;
   line-height: 1.5;
-  color: rgb(233, 233, 233);
+  color: rgb(15,22,42);
   opacity: 100%;
   font-size: 50px;
   margin-top: 2em;
 }
 
 h2 {
+  margin-top: 4em;
   max-width: 80vw;
-  line-height: 1.5;
   opacity: 100%;
   font-size: 32px;
+  padding: .2em;
+  color: rgb(55, 59, 71)
 
 }
 
@@ -66,21 +74,24 @@ h2 {
   max-width: 100vw;
   padding-bottom: 4em;
   display: grid;
-  grid-template-columns: 52% 30%;
-  gap: 10%
+  grid-template-columns: 60% 30%;
+  gap: 10%;
+  padding: 1.6em;
+  font-size: 22px;
+  word-spacing: .1em;
+  letter-spacing: 0.06em;
+  line-height: 1.8em;
 }
 
-.body p {
-  padding: 0.8em;
-}
 
-.posts div:hover {
-  background-color: rgb(35,35,35);
+div[name="dark"] {
+  background-color: rgb(245,245,245);
 }
 
 #posts-index img {
   width: 25vw
 }
+
 
 
 
@@ -94,7 +105,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   color: white;
-  background-color: #0a0a0a;
+  background-color: #4347b5;
   cursor: pointer;
   transition: border-color 0.25s;
 }
