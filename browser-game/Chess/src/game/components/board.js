@@ -87,4 +87,17 @@ export class Square extends Geom.Rectangle {
     this.row = row;
     this.col = col;
   }
+
+  get_piece(scene) {
+    let pieces = scene.pieces;
+    let i = 0
+    while (i < pieces.length) {
+      let pc = pieces[i];
+      if (this.contains(pc.x, pc.y)) {
+        return pc
+      }
+      i++;
+    }
+    return false
+  }
 }

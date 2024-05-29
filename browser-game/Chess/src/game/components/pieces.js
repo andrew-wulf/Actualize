@@ -180,8 +180,27 @@ export class Piece extends GameObjects.Image {
         });
       }
 
+
+      let validated_moves = [];
+      legal_moves.forEach(i => {
+        let sq = squares[i];
+        let pc = sq.get_piece(this.scene);
+        if (pc === false) {
+          validated_moves.push(i);
+        }
+        else {
+          console.log(sq.row, sq.col, pc.type)
+
+          if (pc.type[0] != this.type[0]) {
+            validated_moves.push(i)
+          }
+        }
+      });
+  
+      //NEXT STEP: for queens rooks and bishops, if the abs val of the difference in rows cols is greater than a square with a piece on it, no validation. Also, the final legal_moves arr might need to have value pairs for the nice highlights: [index, collision true or false]
+
       console.log(legal_moves)
-      this.legal_moves = legal_moves;
+      this.legal_moves = validated_moves;
     }
   
 
