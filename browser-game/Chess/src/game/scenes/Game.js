@@ -1,7 +1,8 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
 import {Geom} from 'phaser';
-
+import {board} from '../components/board'
+import {pieces} from '../components/pieces'
 
 export class Game extends Scene
 {
@@ -14,24 +15,15 @@ export class Game extends Scene
     {
         const screen_w = this.game.config.width;
         const screen_h = this.game.config.height;
-        console.log(screen_h / 8, screen_w / 8)
+        console.log(screen_h, screen_w)
     
 
         this.cameras.main.setBackgroundColor('rgba(25, 25, 25, 1)');
 
+        this.graphics = this.add.graphics();
+        this.rectangles = board(this);
+        this.pieces = pieces(this);
 
-        this.light = this.add.graphics();
-        this.light.fillStyle(0xEBECD1);
-
-        this.dark = this.add.graphics();
-        this.dark.fillStyle(0x789656);
-
-
-        this.rect = new Geom.Rectangle(0, 0, 200, 128);
-        console.log(this.rect)
-        this.light.fillRect(this.rect.left, this.rect.top, this.rect.width, this.rect.height)
-    
-        
         EventBus.emit('current-scene-ready', this);
     }
 
@@ -41,4 +33,14 @@ export class Game extends Scene
     {
         this.scene.start('GameOver');
     }
+
+
+
+    rect_center(rect) {
+        let x = rect.left + ((rect.width - rect.left) / 2);
+        let y = rect.top + ((rect.height - rect.top) / 2);
+        return [x, y]
+    }
+
+
 }

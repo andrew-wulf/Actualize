@@ -20,7 +20,7 @@ class Movie_Battle
     mac_path = "/Users/awulf/API_Keys/api_keys.db"
     win_path = "C:\\Users\\chess\\VS Projects\\API_Keys\\api_keys.db"
 
-    db = SQLite3::Database.new(mac_path)
+    db = SQLite3::Database.new(win_path)
     res = db.execute("select api_key1, api_key2 from API_Keys WHERE service = ?", 'themoviedb').first
 
     @access_token = res[1]
@@ -554,7 +554,7 @@ end
 
 def demo
   engine = Movie_Battle.new
-  engine.new_game(bans: false, random: true, test_run: false, multi: true, hard_mode: true)
+  engine.new_game(bans: false, random: false, test_run: false, multi: true, hard_mode: true)
 end
 
 
