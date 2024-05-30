@@ -71,20 +71,20 @@ export function pieces(scene) {
             }
             else {this.scene.click(pointer)}
           }
-          //
+
         });
 
-        //unclick
-        // piece.on('pointerup', function (pointer) {
+        // unclick
+        piece.on('pointerup', function (pointer) {
           
           
           
-        // });
+        });
 
-        //click
-        // piece.on('pointerdown', function (pointer) {
-        //   this.refresh_moves();
-        // });
+        // click
+        piece.on('pointerdown', function (pointer) {
+          this.refresh_moves();
+        });
 
     }
   })

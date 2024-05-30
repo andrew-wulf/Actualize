@@ -63,7 +63,6 @@ export class Game extends Scene
             this.selected_piece.deselect();
         }
         
-
         this.squares.forEach(sq => {sq.reset() 
         });
 
