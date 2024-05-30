@@ -1,4 +1,5 @@
 export function PostsIndex(props) {
+  
   return (
     <div id="posts-index">
       <h1>{props.title}</h1>
@@ -21,8 +22,9 @@ export function PostsIndex(props) {
 
                   </div>
                 
-                  <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiEkqUCXEbnnT0SseSO2KfYlKzsL-TvxorVQ&s"></img>
+                  <img src={post.image}></img>
                 </div>
+                <button onClick={() => props.showMore(post)}>Show More</button>
               </div>
             );
           }
