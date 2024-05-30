@@ -138,6 +138,12 @@ export class Piece extends GameObjects.Image {
     }
 
     move(square) {
+      let pc = square.get_piece(this.scene);
+      console.log(pc)
+      if (pc !== false && pc !== this) {
+        pc.destroy();
+      }
+
       this.x = square.centerX;
       this.y = square.centerY;
       this.pos = [this.x, this.y];
