@@ -3,13 +3,13 @@ import {GameObjects} from 'phaser';
 
 export function pieces(scene) {
   let pieces = []
-  scene.squares.forEach((rect, i) => {
-    let pos = [rect.centerX, rect.centerY]
+  scene.squares.forEach((sq, i) => {
+    let pos = [sq.centerX, sq.centerY]
     let piece = null;
     let types = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
     let origin_y = 0.55;
 
-    console.log(i, pos, [rect.row, rect.col])
+    console.log(i, pos, [sq.row, sq.col])
     if (i < 16) {
         let type = 'bp';
         
@@ -17,8 +17,11 @@ export function pieces(scene) {
             type = 'b' + types[i];
         }
         console.log(type)
-        let pos = [rect.centerX, rect.centerY];
+        let pos = [sq.centerX, sq.centerY];
         piece = new Piece(scene, pos[0], pos[1], type);
+        sq.piece = piece;
+        piece.square = sq;
+        console.log(`${piece.type} | sq: ${piece.square.col} pc: ${piece.square.piece.type}`)
     }
 
     else {
@@ -28,10 +31,14 @@ export function pieces(scene) {
             if (i > 55) {
                 type = 'w' + types[7 - (63 - i)];
             }
-            let pos = [rect.centerX, rect.centerY];
+            let pos = [sq.centerX, sq.centerY];
             piece = new Piece(scene, pos[0], pos[1], type);
+            sq.piece = piece;
+            piece.square = sq;
         }
     }
+
+
 
     if (piece !== null) {
         pieces.push(piece)
@@ -48,8 +55,10 @@ export function pieces(scene) {
 
         // Event listener for drag
         piece.on('drag', function (pointer, dragX, dragY) {
-          this.x = dragX; // Update the image's x-coordinate
-          this.y = dragY; // Update the image's y-coordinate
+          if (scene.match.current_player === piece.type[0]) {
+            this.x = dragX; // Update the image's x-coordinate
+            this.y = dragY; // Update the image's y-coordinate
+          }
         });
 
         // Event listener for drag end
@@ -61,15 +70,19 @@ export function pieces(scene) {
           }
 
           else {
-            let x_diff = Math.abs(pointer.x - this.pos[0])
-            let y_diff = Math.abs(pointer.y - this.pos[1])
-            this.scene.selected_piece = this;
+            
+            if (scene.match.current_player === piece.type[0]) {
+              scene.selected_piece = piece;
 
-            if (x_diff < 50 && y_diff < 50) {
-              this.reset()
-              this.show_moves()
+              let x_diff = Math.abs(pointer.x - this.pos[0]);
+              let y_diff = Math.abs(pointer.y - this.pos[1]);
+
+              if (x_diff < 50 && y_diff < 50) {
+                this.reset()
+                this.show_moves()
+              }
+              else {this.scene.click(pointer)}
             }
-            else {this.scene.click(pointer)}
           }
 
         });
@@ -97,8 +110,9 @@ export class Piece extends GameObjects.Image {
       super(scene, x, y, type);
 
       this.type = type;
-      this.pos = [x, y]
-      this.scene = scene
+      this.pos = [x, y];
+      this.scene = scene;
+      this.square = false;
 
       scene.add.existing(this).setScale(0.7)
 
@@ -138,7 +152,7 @@ export class Piece extends GameObjects.Image {
     }
 
     move(square) {
-      let pc = square.get_piece(this.scene);
+      let pc = square.piece;
       console.log(pc)
       if (pc !== false && pc !== this) {
         pc.destroy();
@@ -147,7 +161,14 @@ export class Piece extends GameObjects.Image {
       this.x = square.centerX;
       this.y = square.centerY;
       this.pos = [this.x, this.y];
+
+      this.square.piece = false;
+      square.piece = this;
+      this.square = square;
+
       this.legal_moves = [];
+
+      this.scene.match.record_move([this, square])
     }
 
     refresh_moves() {
@@ -178,7 +199,7 @@ export class Piece extends GameObjects.Image {
           let i = get_index(m[0], m[1]);
           let sq = squares[i];
 
-          let pc = sq.get_piece(scene);
+          let pc = sq.piece;
           if (pc !== false) {
 
             if (pc.type[0] !== type[0]) {

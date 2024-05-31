@@ -3,8 +3,17 @@ import { useRef, useState } from 'react';
 import Phaser from 'phaser';
 import { PhaserGame } from './game/PhaserGame';
 
+
+
+
 function App ()
-{
+{   
+
+    const [currentPlayer, setCurrentPlayer] = useState("White");    
+
+
+
+
     // The sprite can only be moved in the MainMenu Scene
     const [canMoveSprite, setCanMoveSprite] = useState(true);
     
@@ -70,23 +79,22 @@ function App ()
         
     }
 
+    
+
     return (
         <div id="app">
-            <PhaserGame ref={phaserRef} currentActiveScene={currentScene} />
-            <div>
+                <PhaserGame ref={phaserRef} currentActiveScene={currentScene} setPlayer={e => {setCurrentPlayer(e)}}/>
+
                 <div>
-                    <button className="button" onClick={changeScene}>Change Scene</button>
-                </div>
-                <div>
-                    <button disabled={canMoveSprite} className="button" onClick={moveSprite}>Toggle Movement</button>
-                </div>
-                <div className="spritePosition">Sprite Position:
-                    <pre>{`{\n  x: ${spritePosition.x}\n  y: ${spritePosition.y}\n}`}</pre>
-                </div>
-                <div>
-                    <button className="button" onClick={addSprite}>Add New Sprite</button>
-                </div>
-            </div>
+                    <div className='header'>Current Player: {currentPlayer}</div>
+
+                    <div>
+                        <button className='button'> Last Move </button>
+                    </div>
+                    <div>
+                        <button className="button" onClick={changeScene}>Restart</button>
+                    </div>
+                </div>     
         </div>
     )
 }

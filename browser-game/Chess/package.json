@@ -25,9 +25,11 @@
         "build": "vite build --config vite/config.prod.mjs"
     },
     "dependencies": {
+        "express": "^4.19.2",
         "phaser": "^3.80.1",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react-dom": "^18.2.0",
+        "socket.io": "^4.7.5"
     },
     "devDependencies": {
         "@types/react": "^18.2.58",

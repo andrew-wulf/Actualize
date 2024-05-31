@@ -1,8 +1,8 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
-import {Geom} from 'phaser';
 import {board} from '../components/board'
 import {pieces} from '../components/pieces'
+import {Match} from '../components/match'
 
 export class Game extends Scene
 {
@@ -17,7 +17,7 @@ export class Game extends Scene
         const screen_w = this.game.config.width;
         const screen_h = this.game.config.height;
         console.log(screen_h, screen_w)
-    
+
 
         this.cameras.main.setBackgroundColor('rgba(25, 25, 25, 1)');
 
@@ -27,6 +27,7 @@ export class Game extends Scene
 
         this.selected_piece = false;
         this.legal_moves = [];
+        this.match = new Match(this);
 
         //refresh selections on click
         this.input.on('pointerdown', function (pointer) {
@@ -41,7 +42,7 @@ export class Game extends Scene
 
     changeScene ()
     {
-        this.scene.start('GameOver');
+        this.scene.start('MainMenu');
     }
 
 
