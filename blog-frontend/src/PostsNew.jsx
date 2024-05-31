@@ -18,18 +18,16 @@ export function PostsNew(props) {
       setBody("");
       setImage("");
     }
-    
   }
 
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [image, setImage] = useState("");
   
-
   return (
     <div id="posts-new">
       <h1>New post</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) => {handleSubmit(e); props.refresh()}}>
         <label>
           Title: <input className="InputTitle" value={title} onChange={e => setTitle(e.target.value)}/>
         </label>
@@ -39,7 +37,7 @@ export function PostsNew(props) {
         </label>
 
         <label>
-          Image: <input className="InputImage" value={image} onChange={e => setImage(e.target.value)}/>
+          Image: <input className="InputImage" type='url' value={image} onChange={e => setImage(e.target.value)}/>
         </label>
 
         <div>
