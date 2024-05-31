@@ -24,9 +24,14 @@ export function ProductsIndex(props) {
 
             <h2>{p.name} | {p.supplier.name}</h2>
 
-            <p>${p.price} | {p.color} | {p.in_stock} </p>
+            <img src="https://images.unsplash.com/photo-1582845512747-e42001c95638?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"></img>
 
-            <p> {p.categories}</p>
+            <ul>
+              <li>${p.price} </li>
+              <li>{p.in_stock} in stock</li>
+            </ul>
+            <button>info</button>
+
 
           </div>
         )

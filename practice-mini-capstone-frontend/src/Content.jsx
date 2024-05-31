@@ -5,7 +5,7 @@ import { ProductsNew, ProductsIndex } from './App';
 
 
 export function Content() {
-  const [data, setData] = useState([]);
+  const [productsIndex, setProductsIndex] = useState([]);
 
 
   const getAllProducts = () => {
@@ -14,7 +14,7 @@ export function Content() {
       .then(function (response) {
         // handle success
         console.log(response);
-        setData(response.data);
+        setProductsIndex(response.data);
       })
       .catch(function (error) {
         // handle error
@@ -34,10 +34,10 @@ export function Content() {
 
 
       <button onClick={getAllProducts}>View Products</button>
-      <h1>Products</h1>
+      <h1>All Products</h1>
 
 
-      <ProductsIndex products={data}/>
+      <ProductsIndex products={productsIndex}/>
     </main>
   );
 }

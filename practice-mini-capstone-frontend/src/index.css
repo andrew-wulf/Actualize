@@ -35,6 +35,32 @@ h1 {
   line-height: 1.1;
 }
 
+
+
+#products-index {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 3em;
+
+
+  h2 {
+    font-size: 20px;
+  }
+  li {
+    display: inline-block;
+    margin-right: 18px;
+  }
+  img {
+    width: 22vw;
+  }
+  div {
+    padding-bottom: 2em
+  }
+
+}
+
+
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;
