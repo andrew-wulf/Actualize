@@ -68,7 +68,6 @@ export class Square extends Geom.Rectangle {
     this.graphics = null;
     this.scene = scene;
     this.piece = false;
-    console.log('TEST: ' + this.piece.type)
   }
 
   set_color(color, alt, graphics) {

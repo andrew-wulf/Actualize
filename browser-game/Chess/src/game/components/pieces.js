@@ -172,7 +172,6 @@ export class Piece extends GameObjects.Image {
     }
 
     refresh_moves() {
-      let scene = this.scene;
       let squares = this.scene.squares;
       let legal_moves = [];
       let type = this.type;
@@ -231,13 +230,39 @@ export class Piece extends GameObjects.Image {
             start_row = 6;
           }
 
-          moves.push([row + diff, col]);
-
+          let moves = [[row + diff, col]];
+          
           if (row == start_row) {
             moves.push([row + (diff * 2), col]);
           }
 
-          validate(moves);
+
+          // Doing the pawn move validation by hand because it's unique (and only 2 possible squares)
+
+          moves.forEach(m => {
+            let i = (8 * m[0]) + m[1];
+            console.log(squares[i].piece)
+            if (squares[i].piece === false) {
+              legal_moves.push([squares[i], false]);
+            }
+          })
+
+          // we gonna ignore en passant for now haha
+          // (for later the rule is: if pawn on opponents 3rd rank, and they move a pawn two squares in one turn onto an adjacent square, then capture diagonally as if it moved 1 square. )
+
+
+          let diags = [[row + diff, col + 1], [row + diff, col - 1]]
+
+          diags.forEach(m => {
+            let i = (8 * m[0]) + m[1];
+            console.log(squares[i].piece)
+            if (squares[i].piece !== false) {
+              if (squares[i].piece.type[0] !== this.type[0]) {
+                legal_moves.push([squares[i], true]);
+              }
+            }
+          })
+          
         }
 
         if (this.type.includes('r') || this.type.includes('q')) {
@@ -275,7 +300,17 @@ export class Piece extends GameObjects.Image {
           moves.forEach((m) => {
             validate([m]);
           });
+
+
+        // INSERT CASTLING HERE ------------
+
+
+
         }
+
+  
+
+
 
         if (this.type[1] == 'b' || this.type.includes('q')) {
           [-1, 1].forEach(j => {
