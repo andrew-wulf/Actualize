@@ -36,12 +36,15 @@ export function board(scene) {
 
         let hex = '0x789656';
         let alt = '0xEBECD1';
+        let hl = '0xB9CA43';
         
         if (color === 'light') {
           hex = '0xEBECD1';
           alt = '0x789656';
+          hl = '0xF5F682';
         }
         rect.set_color(hex, alt, graphics)
+        rect.highlighted = hl;
         rectangles.push(rect)
 
         if (i == 0) {
@@ -68,6 +71,7 @@ export class Square extends Geom.Rectangle {
     this.graphics = null;
     this.scene = scene;
     this.piece = false;
+    this.highlighted = null;
   }
 
   set_color(color, alt, graphics) {
@@ -76,9 +80,16 @@ export class Square extends Geom.Rectangle {
       this.alt = alt;
       this.graphics = graphics;
     }
-    
-    graphics.fillStyle(color);
-    graphics.fillRect(this.left, this.top, this.width, this.height)
+    this.fill(color);
+  }
+
+  fill(color) {
+    this.graphics.fillStyle(color);
+    this.graphics.fillRect(this.left, this.top, this.width, this.height)
+  }
+
+  highlight() {
+    this.fill(this.highlighted)
   }
 
   reset() {
