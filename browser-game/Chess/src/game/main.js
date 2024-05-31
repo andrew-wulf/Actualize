@@ -26,6 +26,7 @@ const config = {
     ]
 };
 
+
 const StartGame = (parent) => {
 
     return new Phaser.Game({ ...config, parent });

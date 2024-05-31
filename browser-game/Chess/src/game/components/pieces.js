@@ -1,15 +1,15 @@
-import {GameObjects} from 'phaser';
+import {GameObjects, Geom} from 'phaser';
 
 
 export function pieces(scene) {
   let pieces = []
-  scene.squares.forEach((rect, i) => {
-    let pos = [rect.centerX, rect.centerY]
+  scene.squares.forEach((sq, i) => {
+    let pos = [sq.centerX, sq.centerY]
     let piece = null;
     let types = ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'];
     let origin_y = 0.55;
 
-    console.log(i, pos, [rect.row, rect.col])
+    console.log(i, pos, [sq.row, sq.col])
     if (i < 16) {
         let type = 'bp';
         
@@ -17,8 +17,11 @@ export function pieces(scene) {
             type = 'b' + types[i];
         }
         console.log(type)
-        let pos = [rect.centerX, rect.centerY];
+        let pos = [sq.centerX, sq.centerY];
         piece = new Piece(scene, pos[0], pos[1], type);
+        sq.piece = piece;
+        piece.square = sq;
+        console.log(`${piece.type} | sq: ${piece.square.col} pc: ${piece.square.piece.type}`)
     }
 
     else {
@@ -28,63 +31,67 @@ export function pieces(scene) {
             if (i > 55) {
                 type = 'w' + types[7 - (63 - i)];
             }
-            let pos = [rect.centerX, rect.centerY];
+            let pos = [sq.centerX, sq.centerY];
             piece = new Piece(scene, pos[0], pos[1], type);
+            sq.piece = piece;
+            piece.square = sq;
         }
     }
+
+
 
     if (piece !== null) {
         pieces.push(piece)
 
-
-        // Click event
+        // // Click event
         piece.setInteractive();
         scene.input.setDraggable(piece);
-         // Event listener for drag start
-        piece.on('dragstart', function (pointer) {
-          this.setTint(0xa3a3a2); // Change color when dragging starts
-          this.refresh_moves();
-        });
+        //  // Event listener for drag start
+        // piece.on('dragstart', function (pointer) {
+        // // this.setTint(0xa3a3a2); // Change color when dragging starts
+        //   this.square.highlight();
+        //   this.refresh_moves();
+        // });
 
-        // Event listener for drag
-        piece.on('drag', function (pointer, dragX, dragY) {
-          this.x = dragX; // Update the image's x-coordinate
-          this.y = dragY; // Update the image's y-coordinate
-        });
+        // // Event listener for drag
+        // piece.on('drag', function (pointer, dragX, dragY) {
 
-        // Event listener for drag end
-        piece.on('dragend', function (pointer) {
-          console.log(2)
-          console.log(this.scene.selected_piece)
-          if (this.scene.selected_piece === this) {
-            this.scene.click(pointer);
-          }
+        //     this.x = dragX; // Update the image's x-coordinate
+        //     this.y = dragY; // Update the image's y-coordinate
 
-          else {
-            let x_diff = Math.abs(pointer.x - this.pos[0])
-            let y_diff = Math.abs(pointer.y - this.pos[1])
-            this.scene.selected_piece = this;
+        //     // add square overlap (maybe using the input and copying one of those validations?)
+ 
+        // });
 
-            if (x_diff < 50 && y_diff < 50) {
-              this.reset()
-              this.show_moves()
-            }
-            else {this.scene.click(pointer)}
-          }
+        // // Event listener for drag end
+        // piece.on('dragend', function (pointer) {
+        //   console.log(2)
+        //   console.log(this.scene.selected_piece)
+        //   if (this.scene.selected_piece === this) {
+        //     this.scene.click(pointer);
+        //   }
 
-        });
+        //   else {
+            
+        //     if (scene.match.current_player === piece.type[0]) {
+        //       scene.selected_piece = piece;
 
-        // unclick
-        piece.on('pointerup', function (pointer) {
-          
-          
-          
-        });
+        //       let x_diff = Math.abs(pointer.x - this.pos[0]);
+        //       let y_diff = Math.abs(pointer.y - this.pos[1]);
 
-        // click
-        piece.on('pointerdown', function (pointer) {
-          this.refresh_moves();
-        });
+        //       if (x_diff < 50 && y_diff < 50) {
+        //         this.reset()
+        //         this.show_moves()
+        //       }
+        //       else {this.scene.click(pointer)}
+        //     }
+        //     else {
+        //       piece.reset();
+        //     }
+        //   }
+
+        // });
+
 
     }
   })
@@ -97,8 +104,9 @@ export class Piece extends GameObjects.Image {
       super(scene, x, y, type);
 
       this.type = type;
-      this.pos = [x, y]
-      this.scene = scene
+      this.pos = [x, y];
+      this.scene = scene;
+      this.square = false;
 
       scene.add.existing(this).setScale(0.7)
 
@@ -137,8 +145,10 @@ export class Piece extends GameObjects.Image {
       return null
     }
 
-    move(square) {
-      let pc = square.get_piece(this.scene);
+    move(square, castle=false, record=true) {
+      let former_square = this.square;
+
+      let pc = square.piece;
       console.log(pc)
       if (pc !== false && pc !== this) {
         pc.destroy();
@@ -147,17 +157,40 @@ export class Piece extends GameObjects.Image {
       this.x = square.centerX;
       this.y = square.centerY;
       this.pos = [this.x, this.y];
+
+      this.square.piece = false;
+
+      square.piece = this;
+      this.square = square;
+
       this.legal_moves = [];
+
+      if (castle === true) {
+        let squares = this.scene.squares;
+        let i = square.i;
+
+        let diff = square.i - former_square.i;
+        if (diff === 2) {
+            let rook = squares[i + 1].piece;
+            rook.move(squares[i - 1], false, false);
+        }
+        else {
+            let rook = squares[i - 2].piece;
+            rook.move(squares[i + 1], false, false);
+        }
+      }
+      if (record === true) {
+        this.scene.match.record_move([this, square, former_square]);
+      }
+      this.scene.showChecks()
     }
 
     refresh_moves() {
-      let scene = this.scene;
       let squares = this.scene.squares;
       let legal_moves = [];
       let type = this.type;
       
-      
-      let curr = this.get_square();
+      let curr = this.square;
 
       
       function get_index(row, col) {
@@ -178,7 +211,7 @@ export class Piece extends GameObjects.Image {
           let i = get_index(m[0], m[1]);
           let sq = squares[i];
 
-          let pc = sq.get_piece(scene);
+          let pc = sq.piece;
           if (pc !== false) {
 
             if (pc.type[0] !== type[0]) {
@@ -210,13 +243,39 @@ export class Piece extends GameObjects.Image {
             start_row = 6;
           }
 
-          moves.push([row + diff, col]);
-
+          let moves = [[row + diff, col]];
+          
           if (row == start_row) {
             moves.push([row + (diff * 2), col]);
           }
 
-          validate(moves);
+
+          // Doing the pawn move validation by hand because it's unique (and only 2 possible squares)
+
+          moves.forEach(m => {
+            let i = (8 * m[0]) + m[1];
+            console.log(squares[i].piece)
+            if (squares[i].piece === false) {
+              legal_moves.push([squares[i], false]);
+            }
+          })
+
+          // we gonna ignore en passant for now haha
+          // (for later the rule is: if pawn on opponents 3rd rank, and they move a pawn two squares in one turn onto an adjacent square, then capture diagonally as if it moved 1 square. )
+
+
+          let diags = [[row + diff, col + 1], [row + diff, col - 1]]
+
+          diags.forEach(m => {
+            let i = (8 * m[0]) + m[1];
+            console.log(squares[i].piece)
+            if (squares[i].piece !== false) {
+              if (squares[i].piece.type[0] !== this.type[0]) {
+                legal_moves.push([squares[i], true]);
+              }
+            }
+          })
+          
         }
 
         if (this.type.includes('r') || this.type.includes('q')) {
@@ -254,7 +313,36 @@ export class Piece extends GameObjects.Image {
           moves.forEach((m) => {
             validate([m]);
           });
+
+
+        // INSERT CASTLING HERE ------------
+          let i = this.square.i
+
+          if ((this.type[0] == 'w' && i === 60) || (this.type[0] == 'b' && i === 4)) {
+
+            // kingside
+            if (squares[i + 1].piece === false && squares[i + 2].piece === false && squares[i + 3].piece !== false) {
+              if (squares[i + 3].piece.type[1] == 'r') {
+                legal_moves.push([squares[i + 2], 'castle'])
+              }
+            }
+
+            // queenside
+            if (squares[i - 1].piece === false && squares[i - 2].piece === false && squares[i - 3].piece === false && squares[i - 4].piece !== false) {
+              if (squares[i - 4].piece.type[1] == 'r') {
+                legal_moves.push([squares[i - 2], 'castle'])
+              }
+            }
+          }
+
         }
+
+
+      
+
+  
+
+
 
         if (this.type[1] == 'b' || this.type.includes('q')) {
           [-1, 1].forEach(j => {
@@ -394,7 +482,9 @@ export class Piece extends GameObjects.Image {
 
 
     show_moves() {
-      this.setTint(0x1228b5);
+      // this.setTint(0x1228b5);
+      this.square.highlight();
+
       // console.log(this.legal_moves)
       this.legal_moves.forEach(arr => {
         let sq = arr[0];

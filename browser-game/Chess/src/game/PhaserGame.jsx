@@ -7,6 +7,7 @@ export const PhaserGame = forwardRef(function PhaserGame ({ currentActiveScene }
 {
     const game = useRef();
 
+
     // Create the game inside a useLayoutEffect hook to avoid the game being created outside the DOM
     useLayoutEffect(() => {
         
@@ -16,7 +17,7 @@ export const PhaserGame = forwardRef(function PhaserGame ({ currentActiveScene }
             
             if (ref !== null)
             {
-                ref.current = { game: game.current, scene: null };
+                ref.current = { game: game.current, scene: null};
             }
         }
 
@@ -54,7 +55,6 @@ export const PhaserGame = forwardRef(function PhaserGame ({ currentActiveScene }
     return (
         <div id="game-container"></div>
     );
-
 });
 
 // Props definitions
