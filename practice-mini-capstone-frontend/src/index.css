@@ -4,13 +4,59 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: rgba(29, 29, 29, 0.87);
+  background-color: #FEFBFF;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+header {
+  background: rgb(6,1,91);
+  background: linear-gradient(90deg, rgba(6,1,91,1) 0%, rgba(78,78,190,1) 39%, rgba(66,76,205,1) 70%, rgba(160,0,255,1) 100%);
+  color: rgb(234, 234, 234);
+  padding-top: 1em;
+  padding-bottom: 1em;
+  width: 100vw;
+
+  h1 {
+    text-align: left;
+    margin-left: 2em;
+    font-size: 30px;
+  }
+  a {
+    color: rgb(248, 248, 248);
+  }
+
+  ul {
+    list-style-type: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+    margin-right: 2em;
+    text-align: right;
+  }
+  
+  li {
+    font-size: 22px;
+    display: inline-block;
+    position: relative; /* Needed for ::after positioning */
+    margin-right: 20px; /* Adjust spacing as needed */
+    padding-right: 20px; /* Space for the separator */
+  }
+
+  li::after {
+    content: "|"; /* Separator content */
+    position: absolute;
+    right: 0;
+  }
+  
+  li:last-child::after {
+    content: ""; /* Remove the separator for the last item */
+    margin-right: 0; /* Remove margin from the last item */
+  }
+
 }
 
 a {
@@ -33,28 +79,35 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+
 }
 
-
+.products-title {
+  text-align: left;
+  font-size: 38px;
+  padding-bottom: 1em;
+}
 
 #products-index {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   column-gap: 3em;
-
 
   h2 {
     font-size: 20px;
-  }
-  li {
-    display: inline-block;
-    margin-right: 18px;
+    color: black
   }
   img {
     width: 22vw;
   }
+  .supplier {
+    color: rgb(111, 111, 111);
+  }
+  .price {
+    color: black
+  }
   div {
-    padding-bottom: 2em
+    padding-bottom: 2em;
   }
 
 }

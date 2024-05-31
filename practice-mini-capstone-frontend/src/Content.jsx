@@ -32,11 +32,6 @@ export function Content() {
     <main>
       <ProductsNew />
 
-
-      <button onClick={getAllProducts}>View Products</button>
-      <h1>All Products</h1>
-
-
       <ProductsIndex products={productsIndex}/>
     </main>
   );
