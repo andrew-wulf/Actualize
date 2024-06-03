@@ -39,7 +39,7 @@ function App ()
             <h1>Chess Game</h1>
             <div id="app">
                 
-                <PhaserGame ref={phaserRef} currentActiveScene={""}/>
+                <PhaserGame ref={phaserRef}/>
 
                 <div>
                     <div className='header'>Current Player: {currentPlayer}</div>

@@ -18,8 +18,6 @@ export class Match {
     else {
       this.current_player = 'w';
     }
-    console.log(this.scene.game.props)
-    
   }
 
 

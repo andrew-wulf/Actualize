@@ -1,5 +1,6 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
+import {Input} from 'phaser';
 import {board} from '../components/board'
 import {pieces} from '../components/pieces'
 import {Match} from '../components/match'
@@ -23,14 +24,26 @@ export class Game extends Scene
         this.input.setDefaultCursor('default');
 
         this.graphics = this.add.graphics();
+        this.white_king = false;
+        this.black_king = false;
         this.squares = board(this);
         this.pieces = pieces(this);
-        this.white_king = this.pieces[60];
-        this.black_king = this.pieces[4];
 
         this.selected_piece = false;
         this.legal_moves = [];
         this.match = new Match(this);
+
+
+        //SOUNDS
+        this.move = this.sound.add('move');
+        this.capture = this.sound.add('capture');
+        this.castle = this.sound.add('castle');
+        this.check = this.sound.add('check');
+        this.checkmate = this.sound.add('checkmate');
+        this.promote = this.sound.add('promote');
+        this.illegal = this.sound.add('illegal');
+        this.timer = this.sound.add('timer');
+
 
 
 
@@ -70,8 +83,7 @@ export class Game extends Scene
         
                 // Event listener for drag end
                 piece.on('dragend', function (pointer) {
-                console.log(2)
-                console.log(this.scene.selected_piece)
+                //console.log(this.scene.selected_piece)
                 if (this.selected_piece === this) {
                     this.click(pointer);
                 }
@@ -110,14 +122,11 @@ export class Game extends Scene
 
         // Change cursor to grabbing when an image is clicked and back to grab when released
         this.input.on('gameobjectdown', (pointer, gameObject) => {
-            console.log(gameObject)
+            //console.log(gameObject)
             if (piece_types.includes(gameObject.type)) {
                 this.input.setDefaultCursor('grabbing');
             }
         });
-
-
-        
 
 
 
@@ -127,6 +136,25 @@ export class Game extends Scene
         });
 
 
+        //test event
+        // Create a key object for the "T" key
+        const wKey = this.input.keyboard.addKey(Input.Keyboard.KeyCodes.W);
+
+        // Add a listener for the keydown event for the "T" key
+        wKey.on('down', (event) => {
+        console.log('T key pressed');
+        this.white_king.refresh_moves(true)
+        });
+
+
+        // Create a key object for the "T" key
+        const bKey = this.input.keyboard.addKey(Input.Keyboard.KeyCodes.B);
+
+        // Add a listener for the keydown event for the "T" key
+        bKey.on('down', (event) => {
+        console.log('T key pressed');
+        this.black_king.refresh_moves(true)
+        });
 
         // ------------------------------------
 
@@ -202,53 +230,9 @@ export class Game extends Scene
     showChecks(king) {
         let pieces = this.pieces;
         let checks = [];
-
-        // The bad version
-
-        // pieces.forEach(pc => {
-        //     pc.refresh_moves();
-        //     pc.legal_moves.forEach(move => {
-        //         if (move[1] === true) {
-        //             let sq = move[0];
-        //             if (sq.piece.type[1] === 'k') {
-        //                 checks.push([pc, sq.piece])
-        //             }
-        //         }
-        //     })
-        // })
-        // if (checks.length > 0) {
-        //     console.log('CHECKS:');
-        //     checks.forEach(check => {
-        //         console.log(check[0].type, check[1].type)
-        //     })
-        // }
-
         
+        king.refresh_moves(true);
 
-        // The Hard Version
-        // Once I get this, I'm home free!
-
-        let i = 0;
-        while (i < pieces.length) {
-            let pc = pieces[i];
-            if (pc.type == `${color}k`) {
-                king = pc;
-                break
-            }
-            i++;
-        }
-
-        // Actually I might have already solved it!
-        
-        // So, there's already a refresh_moves function that does 90% of the work for this. 
-        // I think the refresh_moves function itself should contain an optional argument that 
-        // runs the bishop, rook and knight move loops.
-
-        // from there, the validate function could also have an optional argument that switches it up, 
-        // or all the legal moves could be returned here, where a newly made check function can validate
-        // the potential checks.
-
-        // each king should be kept in a variable at this level for easy reference.
 
         // one final idea: a King class could be created that extends the piece class. The only real difference 
         // would be the presence of a getChecks function -- if I think of anything else to put at the piece level it might be worth it!

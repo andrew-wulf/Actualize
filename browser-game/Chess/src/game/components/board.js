@@ -51,11 +51,13 @@ export function board(scene) {
           //console.log(`#${hex.toString().substring(2)}`)
           let label = scene.add.text(rect.left, rect.top, row, { font: '22px Helvetica', fill: `#${alt.substring(2)}`});
           label.setOrigin(0, 0); // Set origin to top left
+          label.setDepth([label], 2)
         }
 
         if (y == 7) {
           let label = scene.add.text((i + 1) * cel_w, (y + 1) * cel_w, col, { font: '22px Helvetica', fill: `#${alt.substring(2)}`});
           label.setOrigin(1,1); // Set origin to bottom right
+          label.setDepth([label], 2)
         }
     }
   }
@@ -72,6 +74,7 @@ export class Square extends Geom.Rectangle {
     this.scene = scene;
     this.piece = false;
     this.highlighted = null;
+    this.danger = '0xAB3022'
   }
 
   set_color(color, alt, graphics) {
@@ -90,6 +93,10 @@ export class Square extends Geom.Rectangle {
 
   highlight() {
     this.fill(this.highlighted)
+  }
+
+  check() {
+    this.fill(this.danger)
   }
 
   reset() {

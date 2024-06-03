@@ -38,7 +38,12 @@ export function pieces(scene) {
         }
     }
 
-
+    if (i == 4) {
+      scene.black_king = piece;
+    }
+    if (i == 60) {
+      scene.white_king = piece;
+    }
 
     if (piece !== null) {
         pieces.push(piece)
@@ -146,24 +151,69 @@ export class Piece extends GameObjects.Image {
     }
 
     move(square, castle=false, record=true) {
-      let former_square = this.square;
 
-      let pc = square.piece;
-      console.log(pc)
-      if (pc !== false && pc !== this) {
-        pc.destroy();
+      let legal = true;
+      let king = this.scene.white_king;
+      let other_king = this.scene.black_king;
+      let sound = this.scene.move;
+
+      if (this.type[0] == 'b') {
+        king = this.scene.black_king;
+        other_king = this.scene.white_king;
       }
 
-      this.x = square.centerX;
-      this.y = square.centerY;
-      this.pos = [this.x, this.y];
+
+  
+      let former_square = this.square;    
+
+      let pc = square.piece;
+      if (pc !== false && pc !== this) {
+        pc.setVisible(false);
+        sound = this.scene.capture;
+      }
 
       this.square.piece = false;
-
-      square.piece = this;
       this.square = square;
+      square.piece = this;
 
-      this.legal_moves = [];
+      //make sure player can't move into checks
+      let checks = king.refresh_moves(true);
+      if (checks.length > 0) {
+        console.log('ILLEGAL MOVE -- CHECKS FOUND:');
+        checks.forEach(m => {
+          console.log(m[0].rowCol, m[1]);
+          m[0].check();
+        })
+
+        record = false;
+        legal = false;
+        this.square = former_square;
+        this.square.piece = this;
+        square.piece = pc;
+        if (pc !== false) {
+          pc.setVisible(true);
+        }
+        sound = this.scene.illegal;
+      }
+
+
+      if (legal === true) {
+        this.x = square.centerX;
+        this.y = square.centerY;
+        this.pos = [this.x, this.y];
+        this.legal_moves = [];
+      }
+      
+      // If successful check, play sound
+      let opp_checks = other_king.refresh_moves(true);
+      if (opp_checks.length > 0) {
+        console.log('Checked enemy king!');
+        checks.forEach(m => {
+          console.log(m[0].rowCol, m[1]);
+        })
+        sound = this.scene.check;
+      }
+
 
       if (castle === true) {
         let squares = this.scene.squares;
@@ -178,14 +228,26 @@ export class Piece extends GameObjects.Image {
             let rook = squares[i - 2].piece;
             rook.move(squares[i + 1], false, false);
         }
+        sound = this.scene.castle;
       }
+
+
       if (record === true) {
         this.scene.match.record_move([this, square, former_square]);
       }
-      this.scene.showChecks()
+      sound.play();
     }
 
-    refresh_moves() {
+
+
+
+    refresh_moves(getChecks=false) {
+      let checks = true;
+      if (getChecks !== true) {
+        checks = false;
+      }
+
+
       let squares = this.scene.squares;
       let legal_moves = [];
       let type = this.type;
@@ -197,7 +259,7 @@ export class Piece extends GameObjects.Image {
         return (8 * row) + col
       }
 
-      function validate(moves) {
+      function validate(moves, checkTypes=[]) {
         let j = 0;
         while (j < moves.length) {
           let m = moves[j];
@@ -207,20 +269,40 @@ export class Piece extends GameObjects.Image {
             continue
           }
 
-          console.log(m)
+          
           let i = get_index(m[0], m[1]);
           let sq = squares[i];
 
           let pc = sq.piece;
-          if (pc !== false) {
 
-            if (pc.type[0] !== type[0]) {
-              legal_moves.push([sq, true]);
+          if (checks !== false) {
+            if (pc !== false) {
+              if (pc.type[0] !== type[0]) {
+               // console.log(pc.type, checkTypes)
+                checkTypes.forEach(check => {
+                  if (pc.type[1] === check) {
+                    legal_moves.push([sq, pc.type[0] + check])
+                  }
+                })
+              }
+              break;
             }
-            break;
+              
+            j++;
           }
-          legal_moves.push([sq, false]);
-          j++;
+
+          else {
+            console.log(m)
+            if (pc !== false) {
+
+              if (pc.type[0] !== type[0]) {
+                legal_moves.push([sq, true]);
+              }
+              break;
+            }
+            legal_moves.push([sq, false]);
+            j++;
+          }
         }
       }
       
@@ -233,7 +315,7 @@ export class Piece extends GameObjects.Image {
         console.log(`Piece: ${this.type} | Current Square: ${curr.i} | RowCol: ${[row, col]}`)
 
         
-        if (this.type.includes('p')) {
+        if (this.type.includes('p') || checks === true) {
           
           let diff = 1;
           let start_row = 1;
@@ -251,14 +333,15 @@ export class Piece extends GameObjects.Image {
 
 
           // Doing the pawn move validation by hand because it's unique (and only 2 possible squares)
-
-          moves.forEach(m => {
-            let i = (8 * m[0]) + m[1];
-            console.log(squares[i].piece)
-            if (squares[i].piece === false) {
-              legal_moves.push([squares[i], false]);
-            }
-          })
+          if (checks === false) {
+            moves.forEach(m => {
+              let i = (8 * m[0]) + m[1];
+              console.log(squares[i].piece)
+              if (squares[i].piece === false) {
+                legal_moves.push([squares[i], false]);
+              }
+            })
+          }
 
           // we gonna ignore en passant for now haha
           // (for later the rule is: if pawn on opponents 3rd rank, and they move a pawn two squares in one turn onto an adjacent square, then capture diagonally as if it moved 1 square. )
@@ -271,15 +354,23 @@ export class Piece extends GameObjects.Image {
             console.log(squares[i].piece)
             if (squares[i].piece !== false) {
               if (squares[i].piece.type[0] !== this.type[0]) {
-                legal_moves.push([squares[i], true]);
+                if (checks === true) {
+                  if (squares[i].piece.type[1] === 'p') {
+                    legal_moves.push([squares[i], squares[i].piece.type[0] + 'p'])
+                  }
+                }
+                else {
+                  legal_moves.push([squares[i], true]);
+                }
+                
               }
             }
           })
           
         }
 
-        if (this.type.includes('r') || this.type.includes('q')) {
-          
+        if (this.type.includes('r') || this.type.includes('q') || checks === true) {
+
           for (let i = 0; i < 2; i++) {
 
             let rowCol = [row, col];
@@ -294,7 +385,7 @@ export class Piece extends GameObjects.Image {
               rowCol[i] = rowCol[i] - 1;
             }
 
-            validate(moves);
+            validate(moves, ['r', 'q']);
 
             moves = [];
             rowCol[i] = start + 1;
@@ -303,15 +394,15 @@ export class Piece extends GameObjects.Image {
               moves.push([rowCol[0], rowCol[1]])
               rowCol[i]++;
             }
-            validate(moves);
+            validate(moves, ['r', 'q']);
           }
         }
         
-        if (this.type.includes('k')) {
+        if (this.type.includes('k') && checks === false) {
           moves = [[row + 1, col], [row - 1, col], [row, col + 1], [row, col - 1], [row + 1, col + 1], [row - 1, col + 1], [row - 1, col - 1], [row + 1, col - 1]];
 
           moves.forEach((m) => {
-            validate([m]);
+            validate([m], ['k']);
           });
 
 
@@ -340,11 +431,9 @@ export class Piece extends GameObjects.Image {
 
       
 
-  
 
 
-
-        if (this.type[1] == 'b' || this.type.includes('q')) {
+        if (this.type[1] == 'b' || this.type.includes('q') || checks === true) {
           [-1, 1].forEach(j => {
             let rowCol = [row, col];
             let start = [row, col];
@@ -360,7 +449,7 @@ export class Piece extends GameObjects.Image {
               rowCol[0]+=j;
             }
 
-            validate(moves);
+            validate(moves, ['b', 'q']);
 
             moves = [];
             rowCol = start;
@@ -373,17 +462,23 @@ export class Piece extends GameObjects.Image {
               rowCol[1]++;
               rowCol[0]+=j;
             }
-            validate(moves);
+            validate(moves, ['b', 'q']);
           });
         }
 
-        if (this.type.includes('n')) {
+        if (this.type.includes('n') || checks === true) {
           moves = [[row + 2, col + 1], [row + 2, col - 1], [row - 2, col + 1], [row - 2, col - 1], [row + 1, col + 2], [row - 1, col + 2], [row + 1, col - 2], [row - 1, col - 2]]
-          moves.forEach(m => validate([m]))
+          moves.forEach(m => validate([m], ['n']))
         }
 
-        console.log(legal_moves);
-        this.legal_moves = legal_moves;
+        if (checks === true) {
+          return legal_moves
+        }
+
+        else {
+          console.log(legal_moves);
+          this.legal_moves = legal_moves;
+        }
 
 
 

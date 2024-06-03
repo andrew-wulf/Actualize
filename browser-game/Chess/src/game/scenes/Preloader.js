@@ -46,6 +46,16 @@ export class Preloader extends Scene
         this.load.image('bb', 'https://assets-themes.chess.com/image/ejgfv/150/bb.png')
         this.load.image('bn', 'https://assets-themes.chess.com/image/ejgfv/150/bn.png')
         this.load.image('bp', 'https://assets-themes.chess.com/image/ejgfv/150/bp.png')
+
+        this.load.audio('move', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-self.mp3')
+        this.load.audio('capture', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/capture.mp3')
+        this.load.audio('castle', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/castle.mp3')
+        this.load.audio('check', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/move-check.mp3')
+        this.load.audio('checkmate', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/game-end.mp3')
+        this.load.audio('promote', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/promote.mp3')
+        this.load.audio('illegal', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/illegal.mp3')
+        this.load.audio('timer', 'https://images.chesscomfiles.com/chess-themes/sounds/_MP3_/default/tenseconds.mp3')
+
     }
 
     create ()
