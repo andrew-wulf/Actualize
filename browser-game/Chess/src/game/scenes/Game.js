@@ -25,6 +25,8 @@ export class Game extends Scene
         this.graphics = this.add.graphics();
         this.squares = board(this);
         this.pieces = pieces(this);
+        this.white_king = this.pieces[60];
+        this.black_king = this.pieces[4];
 
         this.selected_piece = false;
         this.legal_moves = [];
@@ -197,10 +199,9 @@ export class Game extends Scene
         
     }
 
-    showChecks(color) {
+    showChecks(king) {
         let pieces = this.pieces;
         let checks = [];
-        let king = false;
 
         // The bad version
 
@@ -225,7 +226,7 @@ export class Game extends Scene
         
 
         // The Hard Version
-        // Once I get this, I'm home free...
+        // Once I get this, I'm home free!
 
         let i = 0;
         while (i < pieces.length) {
