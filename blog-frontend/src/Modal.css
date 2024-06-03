@@ -41,7 +41,8 @@
   right: 0.2em;
 }
 
-
-img {
-  width: 25vw
+img { 
+  max-width: 30vw;;
 }
+ 
+
