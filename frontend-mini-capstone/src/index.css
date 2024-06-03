@@ -13,6 +13,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -34,6 +35,32 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
+
+.products {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+.productRow {
+  img {
+    max-width: 25vw;
+  }
+  a {
+    color: white;
+    font-weight: 600;
+  }
+  img:hover, a:hover{
+    filter: brightness(70%);
+    cursor: pointer;
+  }
+}
+
+
+
+
+
 
 button {
   border-radius: 8px;
