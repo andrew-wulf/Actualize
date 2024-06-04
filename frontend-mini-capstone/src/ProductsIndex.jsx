@@ -1,8 +1,7 @@
-import {Content} from './Content.jsx'
 
 
 export function ProductsIndex(props) {
-  console.log('showing products index..')
+  //console.log('showing products index..')
 
   if (props.data.length > 0) {
     return (
