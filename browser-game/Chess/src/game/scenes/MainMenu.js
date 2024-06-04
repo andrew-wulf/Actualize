@@ -19,6 +19,7 @@ export class MainMenu extends Scene
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setDepth(100).setOrigin(0.5);
+
         
 
         const new_game = this.add.text(512, 460, 'New Game', {

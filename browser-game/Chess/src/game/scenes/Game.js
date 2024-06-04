@@ -142,8 +142,8 @@ export class Game extends Scene
 
         // Add a listener for the keydown event for the "T" key
         wKey.on('down', (event) => {
-        console.log('T key pressed');
-        this.white_king.refresh_moves(true)
+        console.log('W key pressed');
+        this.match.mate();
         });
 
 
@@ -152,8 +152,8 @@ export class Game extends Scene
 
         // Add a listener for the keydown event for the "T" key
         bKey.on('down', (event) => {
-        console.log('T key pressed');
-        this.black_king.refresh_moves(true)
+        console.log('B key pressed');
+        this.checkForMate(this.black_king);
         });
 
         // ------------------------------------
@@ -236,6 +236,35 @@ export class Game extends Scene
 
         // one final idea: a King class could be created that extends the piece class. The only real difference 
         // would be the presence of a getChecks function -- if I think of anything else to put at the piece level it might be worth it!
+    }
 
+    checkForMate(king) {
+        console.log('Checking for Mate...')
+        let i = 0;
+        let legalMoveExists = false;
+
+        while (i < this.pieces.length && legalMoveExists === false) {
+            let pc = this.pieces[i];
+
+            if (pc.type[0] === king.type[0]) {
+                pc.refresh_moves();
+                let j = 0;
+                while (j < pc.legal_moves.length && legalMoveExists === false) {
+                    let m = pc.legal_moves[j];
+                    console.log(m[0].rowCol);
+                    let res = pc.move(m[0], false, false, true);
+                    if (res === true) {
+                        legalMoveExists = true;
+                    }
+                    j++;
+                }
+            }
+            i++;
+        }
+
+        if (legalMoveExists === false) {
+            console.log('Check Mate!');
+            this.match.mate();
+        }
     }
 }

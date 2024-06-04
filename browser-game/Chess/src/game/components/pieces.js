@@ -150,7 +150,7 @@ export class Piece extends GameObjects.Image {
       return null
     }
 
-    move(square, castle=false, record=true) {
+    move(square, castle=false, record=true, undo=false) {
 
       let legal = true;
       let king = this.scene.white_king;
@@ -185,8 +185,11 @@ export class Piece extends GameObjects.Image {
           m[0].check();
         })
 
-        record = false;
         legal = false;
+      }
+
+      if (legal === false || undo === true) {
+        record = false;
         this.square = former_square;
         this.square.piece = this;
         square.piece = pc;
@@ -196,13 +199,24 @@ export class Piece extends GameObjects.Image {
         sound = this.scene.illegal;
       }
 
+      if (undo === true) {
+        return legal
+        }
+      else {
+        if (legal === true) {
+          this.x = square.centerX;
+          this.y = square.centerY;
+          this.pos = [this.x, this.y];
+          this.legal_moves = [];
+        }
+      } 
 
-      if (legal === true) {
-        this.x = square.centerX;
-        this.y = square.centerY;
-        this.pos = [this.x, this.y];
-        this.legal_moves = [];
-      }
+      
+      
+
+
+
+      
       
       // If successful check, play sound
       let opp_checks = other_king.refresh_moves(true);
@@ -234,6 +248,9 @@ export class Piece extends GameObjects.Image {
 
       if (record === true) {
         this.scene.match.record_move([this, square, former_square]);
+        if (opp_checks.length > 0) {
+          this.scene.checkForMate(other_king);
+        }
       }
       sound.play();
     }
@@ -428,7 +445,6 @@ export class Piece extends GameObjects.Image {
 
         }
 
-
       
 
 
@@ -479,97 +495,6 @@ export class Piece extends GameObjects.Image {
           console.log(legal_moves);
           this.legal_moves = legal_moves;
         }
-
-
-
-
-      // ---------- Below is all a waste but I worked so long on it I don't wanna delete yet :'(
-
-      //   let validated_moves = [];
-      //   let occupied_squares = [];
-  
-      //   legal_moves.forEach(sq => {
-      //     // console.log(sq)
-      //     let pc = sq.get_piece(this.scene);
-      //     if (pc === false) {
-      //       validated_moves.push([sq, false]);
-      //     }
-  
-      //     else {
-      //       occupied_squares.push([sq, pc.type]);
-  
-      //       if (pc.type[0] !== this.type[0]) {
-      //         validated_moves.push([sq, true]);
-      //       }
-      //     }
-      //   });
-  
-      //   //NEXT STEP: for queens rooks and bishops, if the abs val of the difference in rows cols is greater than a square with a piece on it, no validation. Also, the final legal_moves arr might need to have value pairs for the nice highlights: [index, collision true or false]
-  
-      //  // console.log('Legal Moves:')
-      //  // console.log(legal_moves.map(sq => [sq.row, sq.col]));
-      //  // console.log('Occupied Squares:')
-      //  // console.log(occupied_squares.map(arr => [arr[0].row, arr[0].col, arr[1]]));
-  
-  
-      //   if (this.type[1] !== 'n') {
-  
-      //     occupied_squares.forEach((arr) => {
-      //       let sq = arr[0];
-      //       let type = arr[1];
-      //       console.log('blocked square ' + [sq.row, sq.col])
-      //       //Horizontal blocked moves
-      //       if (sq.col == curr.col || sq.row == curr.row) {
-
-      //         let anchor = curr.row;
-      //         let anchor_type = 'row';
-      //         let line1 = curr.col;
-      //         let line2 = sq.col
-              
-
-      //         if (sq.col == curr.col) {
-      //           anchor = curr.col;
-      //           anchor_type = 'col'
-      //           line1 = curr.row;
-      //           line2 = sq.row;
-      //         }
-
-      //         console.log(`anchor: ${anchor} line1: ${line1} line2: ${line2}`)
-      //         let diff = line1 - line2
-
-      //         if (diff > 1) {
-      //           for (let i = line2 - 1; i > -1; i--) {
-      //             let x = anchor;
-      //             let y = i;
-
-      //             if (anchor_type == 'col') {
-      //               x = i;
-      //               y = anchor;
-      //             }
-      //             console.log(x, y)
-      //             let blocked_index = this.get_index(x, y);
-      //             this.drop_move(validated_moves, blocked_index)
-      //           }
-      //         }
-      //         else {
-      //           for (let i = line2 + 1; i < 8; i++) {
-      //             let blocked_index = this.get_index(i, line1);
-      //             this.drop_move(validated_moves, blocked_index)
-      //           }
-      //         }
-
-      //       }
-
-      //     });
-        
-  
-      //      // console.log(`removing at index ${i}`);
-      //      // this.drop_move(validated_moves, sq.i);
-      //   }
-    
-      //   console.log('Validated Moves:')
-      //   console.log(validated_moves.map(arr => [arr[0].row, arr[0].col, arr[1]]));
-      //   this.legal_moves = validated_moves;  
 
       }
     }
