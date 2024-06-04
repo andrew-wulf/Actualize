@@ -14,10 +14,10 @@ export function PostsIndex(props) {
             return (
               <div key={post.id} name={bg}>
                 <h2>{post.title}</h2>
-                
                 <div className="body">
                   <div>
                     
+                
                     <p>{post.body}</p>
 
                   </div>

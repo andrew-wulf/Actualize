@@ -28,3 +28,40 @@
   top: 0em;
   right: 0.2em;
 }
+
+
+form {
+  display: grid;
+  grid-template-columns: 1fr;
+  line-height: 2em;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+
+  button {
+    max-height: 50px;
+
+  }
+
+  img {
+    max-width: 25vw;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+.header-grid {
+  display: grid;
+  grid-template-columns: 70% 20%;
+  gap: 5%;
+  .title {
+    text-align: right;
+  }
+  .supplier {
+    text-align: left;
+    color: rgba(176, 176, 176, 0.903)
+  }
+}
