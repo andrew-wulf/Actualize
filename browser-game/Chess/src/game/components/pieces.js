@@ -47,57 +47,8 @@ export function pieces(scene) {
 
     if (piece !== null) {
         pieces.push(piece)
-
-        // // Click event
         piece.setInteractive();
         scene.input.setDraggable(piece);
-        //  // Event listener for drag start
-        // piece.on('dragstart', function (pointer) {
-        // // this.setTint(0xa3a3a2); // Change color when dragging starts
-        //   this.square.highlight();
-        //   this.refresh_moves();
-        // });
-
-        // // Event listener for drag
-        // piece.on('drag', function (pointer, dragX, dragY) {
-
-        //     this.x = dragX; // Update the image's x-coordinate
-        //     this.y = dragY; // Update the image's y-coordinate
-
-        //     // add square overlap (maybe using the input and copying one of those validations?)
- 
-        // });
-
-        // // Event listener for drag end
-        // piece.on('dragend', function (pointer) {
-        //   console.log(2)
-        //   console.log(this.scene.selected_piece)
-        //   if (this.scene.selected_piece === this) {
-        //     this.scene.click(pointer);
-        //   }
-
-        //   else {
-            
-        //     if (scene.match.current_player === piece.type[0]) {
-        //       scene.selected_piece = piece;
-
-        //       let x_diff = Math.abs(pointer.x - this.pos[0]);
-        //       let y_diff = Math.abs(pointer.y - this.pos[1]);
-
-        //       if (x_diff < 50 && y_diff < 50) {
-        //         this.reset()
-        //         this.show_moves()
-        //       }
-        //       else {this.scene.click(pointer)}
-        //     }
-        //     else {
-        //       piece.reset();
-        //     }
-        //   }
-
-        // });
-
-
     }
   })
   return pieces
@@ -126,6 +77,7 @@ export class Piece extends GameObjects.Image {
 
       this.selected = false;
       this.legal_moves = [];
+      this.active = true;
     }
 
     deselect() {
@@ -169,6 +121,7 @@ export class Piece extends GameObjects.Image {
       let pc = square.piece;
       if (pc !== false && pc !== this) {
         pc.setVisible(false);
+        pc.active = false;
         sound = this.scene.capture;
       }
 
@@ -211,25 +164,9 @@ export class Piece extends GameObjects.Image {
         }
       } 
 
-      
-      
+      // unique castling function
 
-
-
-      
-      
-      // If successful check, play sound
-      let opp_checks = other_king.refresh_moves(true);
-      if (opp_checks.length > 0) {
-        console.log('Checked enemy king!');
-        checks.forEach(m => {
-          console.log(m[0].rowCol, m[1]);
-        })
-        sound = this.scene.check;
-      }
-
-
-      if (castle === true) {
+      if (castle === true && legal === true) {
         let squares = this.scene.squares;
         let i = square.i;
 
@@ -245,11 +182,23 @@ export class Piece extends GameObjects.Image {
         sound = this.scene.castle;
       }
 
+      // If successful check, play sound
+      let opp_checks = other_king.refresh_moves(true);
+      if (opp_checks.length > 0) {
+        console.log('Checked enemy king!');
+        checks.forEach(m => {
+          console.log(m[0].rowCol, m[1]);
+        })
+        sound = this.scene.check;
+      }
 
       if (record === true) {
         this.scene.match.record_move([this, square, former_square]);
         if (opp_checks.length > 0) {
-          this.scene.checkForMate(other_king);
+          let validMoveExists = this.scene.checkForMate(other_king);
+          if (validMoveExists === false) {
+            sound = this.scene.checkmate
+          }
         }
       }
       sound.play();

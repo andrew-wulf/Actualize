@@ -31,18 +31,23 @@ export class Match {
 
 
 mate() {
-  
+  this.scene.active = false;
+  this.scene.pieces.forEach(pc => {
+    pc.disableInteractive();
+    this.scene.input.setDraggable(pc, false);
+  })
+
   const mate = this.scene.add.text(400, 340, 'Checkmate!', {
     fontFamily: 'Arial Black', fontSize: 60, color: '#ffffff',
     stroke: '#000000', strokeThickness: 8,
     align: 'center'
-}).setDepth(100).setOrigin(0.5);
+  }).setDepth(100).setOrigin(0.5);
 
-const rematch = this.scene.add.text(410, 480, 'Rematch', {
-    fontFamily: 'Arial Black', fontSize: 38, color: 'rgba(240,240,240,1)',
-    stroke: '#000000', strokeThickness: 8,
-    align: 'center'
-}).setDepth(100).setOrigin(0.5);
+  const rematch = this.scene.add.text(410, 480, 'Rematch', {
+      fontFamily: 'Arial Black', fontSize: 38, color: 'rgba(240,240,240,1)',
+      stroke: '#000000', strokeThickness: 8,
+      align: 'center'
+  }).setDepth(100).setOrigin(0.5);
 
 rematch.setInteractive();
 mate.setInteractive();

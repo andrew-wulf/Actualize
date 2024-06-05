@@ -14,7 +14,7 @@ export class MainMenu extends Scene
     {
         this.cameras.main.setBackgroundColor('rgba(25, 25, 25, 1)');
 
-        this.logo = this.add.text(512, 300, 'Chess', {
+        this.logo = this.add.text(420, 300, 'Chess', {
             fontFamily: 'Arial Black', fontSize: 60, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
@@ -22,8 +22,8 @@ export class MainMenu extends Scene
 
         
 
-        const new_game = this.add.text(512, 460, 'New Game', {
-            fontFamily: 'Arial Black', fontSize: 38, color: 'rgba(220,220,220,1)',
+        const new_game = this.add.text(422, 460, 'New Game', {
+            fontFamily: 'Arial Black', fontSize: 38, color: 'rgba(180,180,180,1)',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setDepth(100).setOrigin(0.5);

@@ -4,6 +4,7 @@ import {Input} from 'phaser';
 import {board} from '../components/board'
 import {pieces} from '../components/pieces'
 import {Match} from '../components/match'
+import {Stockfish} from '../components/stockfish'
 
 export class Game extends Scene
 {
@@ -32,7 +33,8 @@ export class Game extends Scene
         this.selected_piece = false;
         this.legal_moves = [];
         this.match = new Match(this);
-
+        this.engine = new Stockfish(this);
+        this.active = true;
 
         //SOUNDS
         this.move = this.sound.add('move');
@@ -53,7 +55,7 @@ export class Game extends Scene
 
         // Change cursor to grab when pointer is over an interactive image
         this.input.on('pointerover', (pointer, gameObject) => {
-            if (gameObject.length > 0 && piece_types.includes(gameObject[0].type)) {
+            if (gameObject.length > 0 && piece_types.includes(gameObject[0].type) && this.input.scene.active === true) {
                 this.input.setDefaultCursor('grab');
 
 
@@ -123,7 +125,7 @@ export class Game extends Scene
         // Change cursor to grabbing when an image is clicked and back to grab when released
         this.input.on('gameobjectdown', (pointer, gameObject) => {
             //console.log(gameObject)
-            if (piece_types.includes(gameObject.type)) {
+            if (piece_types.includes(gameObject.type) && this.input.scene.active === true) {
                 this.input.setDefaultCursor('grabbing');
             }
         });
@@ -132,7 +134,10 @@ export class Game extends Scene
 
         //refresh selections on click
         this.input.on('pointerdown', function (pointer) {
-            this.scene.click(pointer)
+            if (this.scene.active === true) {
+                this.scene.click(pointer);
+            }
+            
         });
 
 
@@ -153,7 +158,7 @@ export class Game extends Scene
         // Add a listener for the keydown event for the "T" key
         bKey.on('down', (event) => {
         console.log('B key pressed');
-        this.checkForMate(this.black_king);
+        this.engine.request();
         });
 
         // ------------------------------------
@@ -246,15 +251,15 @@ export class Game extends Scene
         while (i < this.pieces.length && legalMoveExists === false) {
             let pc = this.pieces[i];
 
-            if (pc.type[0] === king.type[0]) {
+            if (pc.type[0] === king.type[0] && pc.active === true) {
                 pc.refresh_moves();
                 let j = 0;
                 while (j < pc.legal_moves.length && legalMoveExists === false) {
                     let m = pc.legal_moves[j];
-                    console.log(m[0].rowCol);
                     let res = pc.move(m[0], false, false, true);
                     if (res === true) {
                         legalMoveExists = true;
+                        console.log('LEGAL MOVE FOUND: ' + pc.type + m[0].rowCol);
                     }
                     j++;
                 }
@@ -266,5 +271,6 @@ export class Game extends Scene
             console.log('Check Mate!');
             this.match.mate();
         }
+        return legalMoveExists
     }
 }
