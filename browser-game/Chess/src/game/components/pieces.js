@@ -64,7 +64,7 @@ export class Piece extends GameObjects.Image {
       this.scene = scene;
       this.square = false;
 
-      scene.add.existing(this).setScale(0.7)
+      scene.add.existing(this).setScale(0.7).setDepth(2);
 
       this.origin_y = 0.5
 
@@ -194,10 +194,46 @@ export class Piece extends GameObjects.Image {
 
       if (record === true) {
         this.scene.match.record_move([this, square, former_square]);
-        if (opp_checks.length > 0) {
-          let validMoveExists = this.scene.checkForMate(other_king);
-          if (validMoveExists === false) {
-            sound = this.scene.checkmate
+
+        // update castle validation (forbid future castles if either piece was moved)
+        if (this.scene.match.castles !== false && (this.type[1] === 'k' || this.type[1] === 'r')) {
+          let castles = this.scene.match.castles;
+  
+          if (this.type[1] === 'k') {
+            if (this.type[0] === 'w') {
+              castles.wk = false;
+              castles.wq = false;
+            }
+            else {
+              castles.bk = false;
+              castles.bq = false;
+            }
+          }
+
+          if (this.type[1] === 'r') {
+            let side = 'k';
+            if (former_square.col === 0) {
+              side = 'q';
+            }
+            castles[this.type[0] + side] = false;
+          }
+          console.log('Current castles: ' + Object.values(castles))
+          if (Object.values(castles).every(v => {v === false})) {
+            castles = false;
+          }
+        }
+        
+        
+        // detect if no valid moves for opponent, i.e. checkmate or stalemate
+
+        let validMoveExists = this.scene.checkForMate(other_king);
+        if (validMoveExists === false) {
+          sound = this.scene.end;
+        }
+        else {
+          let draw = this.scene.match.checkRepetition();
+          if (draw === true) {
+            sound = this.scene.end;
           }
         }
       }
@@ -244,7 +280,7 @@ export class Piece extends GameObjects.Image {
           if (checks !== false) {
             if (pc !== false) {
               if (pc.type[0] !== type[0]) {
-               // console.log(pc.type, checkTypes)
+                console.log(pc.type, checkTypes)
                 checkTypes.forEach(check => {
                   if (pc.type[1] === check) {
                     legal_moves.push([sq, pc.type[0] + check])
@@ -364,7 +400,7 @@ export class Piece extends GameObjects.Image {
           }
         }
         
-        if (this.type.includes('k') && checks === false) {
+        if (this.type.includes('k') || checks === true) {
           moves = [[row + 1, col], [row - 1, col], [row, col + 1], [row, col - 1], [row + 1, col + 1], [row - 1, col + 1], [row - 1, col - 1], [row + 1, col - 1]];
 
           moves.forEach((m) => {
@@ -373,21 +409,24 @@ export class Piece extends GameObjects.Image {
 
 
         // INSERT CASTLING HERE ------------
-          let i = this.square.i
+          if (checks === false) {
 
-          if ((this.type[0] == 'w' && i === 60) || (this.type[0] == 'b' && i === 4)) {
+            let i = this.square.i
+  
+            if ( i === 60 || i === 4) {
 
-            // kingside
-            if (squares[i + 1].piece === false && squares[i + 2].piece === false && squares[i + 3].piece !== false) {
-              if (squares[i + 3].piece.type[1] == 'r') {
-                legal_moves.push([squares[i + 2], 'castle'])
+              // kingside
+              if (squares[i + 1].piece === false && squares[i + 2].piece === false && squares[i + 3].piece !== false) {
+                if (squares[i + 3].piece.type[1] == 'r' && this.scene.match.castles[this.type[0] + 'k'] === true) {
+                  legal_moves.push([squares[i + 2], 'castle'])
+                }
               }
-            }
-
-            // queenside
-            if (squares[i - 1].piece === false && squares[i - 2].piece === false && squares[i - 3].piece === false && squares[i - 4].piece !== false) {
-              if (squares[i - 4].piece.type[1] == 'r') {
-                legal_moves.push([squares[i - 2], 'castle'])
+  
+              // queenside
+              if (squares[i - 1].piece === false && squares[i - 2].piece === false && squares[i - 3].piece === false && squares[i - 4].piece !== false) {
+                if (squares[i - 4].piece.type[1] == 'r' && this.scene.match.castles[this.type[0] + 'q'] === true) {
+                  legal_moves.push([squares[i - 2], 'castle'])
+                }
               }
             }
           }
@@ -395,7 +434,6 @@ export class Piece extends GameObjects.Image {
         }
 
       
-
 
 
         if (this.type[1] == 'b' || this.type.includes('q') || checks === true) {

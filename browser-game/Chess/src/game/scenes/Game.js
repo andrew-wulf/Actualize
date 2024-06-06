@@ -34,6 +34,7 @@ export class Game extends Scene
         this.legal_moves = [];
         this.match = new Match(this);
         this.engine = new Stockfish(this);
+        this.mode = 'engine';
         this.active = true;
 
         //SOUNDS
@@ -41,7 +42,7 @@ export class Game extends Scene
         this.capture = this.sound.add('capture');
         this.castle = this.sound.add('castle');
         this.check = this.sound.add('check');
-        this.checkmate = this.sound.add('checkmate');
+        this.end = this.sound.add('checkmate');
         this.promote = this.sound.add('promote');
         this.illegal = this.sound.add('illegal');
         this.timer = this.sound.add('timer');
@@ -148,7 +149,7 @@ export class Game extends Scene
         // Add a listener for the keydown event for the "T" key
         wKey.on('down', (event) => {
         console.log('W key pressed');
-        this.match.mate();
+        this.match.end();
         });
 
 
@@ -247,6 +248,11 @@ export class Game extends Scene
         console.log('Checking for Mate...')
         let i = 0;
         let legalMoveExists = false;
+        let opp_king = this.black_king;
+
+        if (king === this.black_king) {
+            opp_king = this.white_king;
+        }
 
         while (i < this.pieces.length && legalMoveExists === false) {
             let pc = this.pieces[i];
@@ -268,9 +274,20 @@ export class Game extends Scene
         }
 
         if (legalMoveExists === false) {
-            console.log('Check Mate!');
-            this.match.mate();
+            let checks = king.refresh_moves(true);
+            if (checks.length > 0) {
+                console.log('Check Mate!');
+                this.match.end('mate', opp_king.type);
+            }
+            else {
+                console.log('Stalemate!')
+                this.match.end('draw');
+            }
         }
         return legalMoveExists
+    }
+
+    checkForStalemate() {
+        console.log('test')
     }
 }
