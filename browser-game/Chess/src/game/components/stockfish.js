@@ -53,7 +53,17 @@ export class Stockfish {
     let player = this.scene.match.current_player;
 
     // field 3
-    let castles = 'QKqk';
+    let castles = '';
+    let sides = this.scene.match.castles;
+    if (sides === false) {castles = '-'}
+
+    else {
+      if (sides.wk === true) {castles += "K"}
+      if (sides.wq === true) {castles += "Q"}
+      if (sides.bk === true) {castles += "k"}
+      if (sides.bq === true) {castles += "q"}
+    }
+    if (castles === '') {castles = '-'}
 
     // field 4
     let passant = '-';
@@ -73,7 +83,7 @@ export class Stockfish {
   }
 
 
-  request() {
+  request(timeout=3000) {
     let fen = this.get_FEN();
     let params = {fen: fen, depth: this.depth, mode: 'bestmove'};
 
@@ -81,7 +91,10 @@ export class Stockfish {
     .then(response => {
       console.log(response);
       console.log(response.data.bestmove.substring(9, 13))
-      return response.data.bestmove.substring(9, 13)
+
+      if (this.scene.match.mode === 'engine') {
+        this.scene.match.engine_move(response.data.bestmove.substring(9, 13), timeout);
+      }
     })
     .catch(error => {
       console.log(error);
