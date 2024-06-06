@@ -42,6 +42,21 @@ export function Content() {
     }
   }
 
+  const handleCreateProduct = (params, e) => {
+    axios.post('http://localhost:3000/products/create.json', params)
+    .then(response => {
+      console.log(response);
+      handleNewProductClose();
+      e.target.reset();
+      let newProducts = products;
+      newProducts.push(response.data);
+      setProducts(newProducts);
+    })
+    .catch(error => {
+      console.log(error);
+    })
+  }
+
   const handleShowProduct = (id) => {
     console.log(id);
     setProductVisible(true);
@@ -125,7 +140,7 @@ export function Content() {
       </Modal>
 
       <Modal show={isNewProductVisible} onClose={handleNewProductClose}>
-        <ProductsNew />
+        <ProductsNew createProduct={handleCreateProduct}/>
       </Modal>
     </div>
   )
