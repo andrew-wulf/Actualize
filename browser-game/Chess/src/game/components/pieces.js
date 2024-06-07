@@ -89,18 +89,7 @@ export class Piece extends GameObjects.Image {
       this.y = this.pos[1];
       this.clearTint();
     }
-
-    get_square() {
-      let squares = this.scene.squares;
-      let i = 0;
-      while (i < squares.length) {
-        if (squares[i].contains(this.x, this.y)) {
-          return squares[i];
-        }
-        i++;
-      }
-      return null
-    }
+    
 
     move(square, castle=false, record=true, undo=false) {
 
@@ -114,15 +103,31 @@ export class Piece extends GameObjects.Image {
         other_king = this.scene.white_king;
       }
 
-
+      // detect pawn promotion (i.e. the only time this function is ever called on a stationary piece)
+      if (square === this.square) {
+        sound = this.scene.promote;
+        this.scene.match.piecesInteractive(true);
+      }
   
       let former_square = this.square;    
 
+      // regular captures
       let pc = square.piece;
       if (pc !== false && pc !== this) {
         pc.setVisible(false);
         pc.active = false;
         sound = this.scene.capture;
+      }
+
+      // detect en passant capture (only capture where pieces don't touch)
+      if (this.type[1] === 'p' && square === this.scene.match.passant) {
+        let last_move = this.scene.match.last_move;
+        let deadPawn = last_move[0];
+        if (deadPawn.type !== this.type) {
+          last_move[1].piece = false;
+          deadPawn.setVisible(false);
+          sound = this.scene.capture;
+        }
       }
 
       this.square.piece = false;
@@ -181,6 +186,14 @@ export class Piece extends GameObjects.Image {
         }
         sound = this.scene.castle;
       }
+
+      // setup pawn promotions
+      if (this.type[1] === 'p' && (this.square.row === 7 || this.square.row === 0)) {
+        this.promote();
+        return
+      }
+      
+
 
       // If successful check, play sound
       let opp_checks = other_king.refresh_moves(true);
@@ -345,9 +358,7 @@ export class Piece extends GameObjects.Image {
             })
           }
 
-          // we gonna ignore en passant for now haha
-          // (for later the rule is: if pawn on opponents 3rd rank, and they move a pawn two squares in one turn onto an adjacent square, then capture diagonally as if it moved 1 square. )
-
+        
 
           let diags = [[row + diff, col + 1], [row + diff, col - 1]]
 
@@ -366,6 +377,10 @@ export class Piece extends GameObjects.Image {
                 }
                 
               }
+            }
+
+            if (squares[i] === this.scene.match.passant) {
+              legal_moves.push([squares[i], 'en passant'])
             }
           })
           
@@ -517,5 +532,62 @@ export class Piece extends GameObjects.Image {
     }
 
     
+    promote() {
+      let factor = -100;
+      let pre = this.type[0];
+      let pieces = [];
+      let to_promote = false;
+      let types = ['q', 'n', 'r', 'b'];
+      let square = this.square;
+      let promoted = false;
+
+      if (pre === 'w') {
+        factor = 100;
+      }
+
+      // Disable all normal pieces until selection is made //
+      this.scene.match.piecesInteractive(false);
+
+      console.log(this.x, this.y);
+
+      types.forEach((type, i) => {
+        let pc = new Piece(this.scene, this.x, this.y + (factor * (i+1)), pre + type);
+        pieces.push(pc);
+
+        pc.setInteractive();
+        pc.on('pointerdown', function (pointer) {
+          if (promoted === false) {
+            pick(pc.type);
+          }
+        });
+        pieces.push(pc);
+      })
+
+      function pick(type) {
+        pieces.forEach(pc => {
+          if (pc.type === type) {
+            to_promote = pc;
+          }
+          else {
+            pc.destroy();
+          }
+        })
+
+        let pc = to_promote;
+        square.piece.setVisible(false);
+        pc.square = square;
+        square.piece = pc;
+        pc.setVisible(true);
+        pc.x = square.centerX;
+        pc.y = square.centerY;
+        pc.pos = [pc.x, pc.y];
+
+        pc.move(pc.square);
+        pc.scene.input.setDraggable(pc);
+        pc.scene.pieces.push(pc);
+        promoted = true;
+      }
+
+    }
   }
 

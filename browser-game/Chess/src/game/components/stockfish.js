@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 export class Stockfish {
-  constructor(scene) {
+  constructor(scene, depth) {
     this.scene = scene;
-    this.depth = 1;
+    this.depth = depth;
   }
 
 

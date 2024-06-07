@@ -1,98 +1,69 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
+import { Text } from '../components/text';
 
 export class MainMenu extends Scene
 {
-    logoTween;
-
     constructor ()
     {
-        super('MainMenu');
+        super({key: 'MainMenu'});
+    }
+
+    init(options) {
+        this.options = options;
     }
 
     create ()
     {
         this.cameras.main.setBackgroundColor('rgba(25, 25, 25, 1)');
 
-        this.logo = this.add.text(420, 300, 'Chess', {
+        this.logo = this.add.text(420, 260, 'Chess', {
             fontFamily: 'Arial Black', fontSize: 60, color: '#ffffff',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setDepth(100).setOrigin(0.5);
 
-        
 
-        const new_game = this.add.text(422, 460, 'New Game', {
+        const new_game = this.add.text(422, 430, 'New Game', {
+            fontFamily: 'Arial Black', fontSize: 38, color: 'rgba(180,180,180,1)',
+            stroke: '#000000', strokeThickness: 8,
+            align: 'center'
+        }).setDepth(100).setOrigin(0.5);
+
+        const options = this.add.text(422, 500, 'Options', {
             fontFamily: 'Arial Black', fontSize: 38, color: 'rgba(180,180,180,1)',
             stroke: '#000000', strokeThickness: 8,
             align: 'center'
         }).setDepth(100).setOrigin(0.5);
 
 
-        // Mouseover event
-        new_game.on('pointerover', function () {
-            new_game.setFill('rgba(255,255,255,1)'); // Lighter color
-        });
+        [[new_game, 'Game'], [options, 'Options']].forEach(arr => {
+            // Mouseover event
+            let btn = arr[0];
+            let scene = arr[1];
 
-        // Mouseout event
-        new_game.on('pointerout', function () {
-            new_game.setFill('rgba(220,220,220,1)'); // Original color
-        });
+            btn.on('pointerover', function () {
+                btn.setFill('rgba(255,255,255,1)'); // Lighter color
+            });
 
-        // Click event
-        new_game.setInteractive();
-        new_game.on('pointerdown', function () {
-            console.log(this.scene.changeScene())
-            ;
-        });
+            // Mouseout event
+            btn.on('pointerout', function () {
+                btn.setFill('rgba(220,220,220,1)'); // Original color
+            });
 
+            // Click event
+            btn.setInteractive();
+            btn.on('pointerdown', function () {
+                this.scene.goTo(scene);
+            });
+        })
 
-        
         EventBus.emit('current-scene-ready', this);
     }
 
-    changeScene ()
+    goTo (scene)
     {
-        if (this.logoTween)
-        {
-            this.logoTween.stop();
-            this.logoTween = null;
-        }
-
-        this.scene.start('Game');
+        this.scene.start(scene, this.options);
     }
 
-    moveLogo (reactCallback)
-    {
-        if (this.logoTween)
-        {
-            if (this.logoTween.isPlaying())
-            {
-                this.logoTween.pause();
-            }
-            else
-            {
-                this.logoTween.play();
-            }
-        }
-        else
-        {
-            this.logoTween = this.tweens.add({
-                targets: this.logo,
-                x: { value: 750, duration: 3000, ease: 'Back.easeInOut' },
-                y: { value: 80, duration: 1500, ease: 'Sine.easeOut' },
-                yoyo: true,
-                repeat: -1,
-                onUpdate: () => {
-                    if (reactCallback)
-                    {
-                        reactCallback({
-                            x: Math.floor(this.logo.x),
-                            y: Math.floor(this.logo.y)
-                        });
-                    }
-                }
-            });
-        }
-    }
 }

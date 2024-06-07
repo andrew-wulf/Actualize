@@ -10,30 +10,35 @@ export class Game extends Scene
 {
     constructor ()
     {
-        super('Game');
+        super({key: 'Game'});
+    }
 
+    init(options) {
+        this.options = options;
     }
 
     create ()
     {
+        //BASIC SETTINGS
         const screen_w = this.game.config.width;
         const screen_h = this.game.config.height;
         console.log(screen_h, screen_w)
 
-
         this.cameras.main.setBackgroundColor('rgba(25, 25, 25, 1)');
         this.input.setDefaultCursor('default');
 
+        //COMPONENTS
         this.graphics = this.add.graphics();
         this.white_king = false;
         this.black_king = false;
         this.squares = board(this);
         this.pieces = pieces(this);
 
+        //KEY VARIABLES
         this.selected_piece = false;
         this.legal_moves = [];
         this.match = new Match(this);
-        this.engine = new Stockfish(this);
+        this.engine = new Stockfish(this, this.options.depth);
         this.mode = 'engine';
         this.active = true;
 
@@ -47,12 +52,16 @@ export class Game extends Scene
         this.illegal = this.sound.add('illegal');
         this.timer = this.sound.add('timer');
 
-
+        //OPTIONS SETUP
+        if (this.options.mode !== '2-Player') {
+            this.match.mode = 'engine';
+        }
+        // no support for black pieces POV yet
 
 
         // STANDARD INPUT LISTENERS ------
 
-        let piece_types = ['wp', 'wb', 'wn', 'wr', 'wq', 'wk', 'bp', 'bb', 'bn', 'br', 'bq', 'bk']
+        let piece_types = ['wp', 'wb', 'wn', 'wr', 'wq', 'wk', 'bp', 'bb', 'bn', 'br', 'bq', 'bk'];
 
         // Change cursor to grab when pointer is over an interactive image
         this.input.on('pointerover', (pointer, gameObject) => {
@@ -142,21 +151,17 @@ export class Game extends Scene
         });
 
 
-        //test event
-        // Create a key object for the "T" key
+        //Insert any test here and call with 'W' or 'B' keys
+
         const wKey = this.input.keyboard.addKey(Input.Keyboard.KeyCodes.W);
 
-        // Add a listener for the keydown event for the "T" key
         wKey.on('down', (event) => {
         console.log('W key pressed');
-        this.match.end();
+        this.pieces[10].promote();
         });
 
-
-        // Create a key object for the "T" key
         const bKey = this.input.keyboard.addKey(Input.Keyboard.KeyCodes.B);
 
-        // Add a listener for the keydown event for the "T" key
         bKey.on('down', (event) => {
         console.log('B key pressed');
         this.engine.request();
@@ -233,16 +238,6 @@ export class Game extends Scene
         
     }
 
-    showChecks(king) {
-        let pieces = this.pieces;
-        let checks = [];
-        
-        king.refresh_moves(true);
-
-
-        // one final idea: a King class could be created that extends the piece class. The only real difference 
-        // would be the presence of a getChecks function -- if I think of anything else to put at the piece level it might be worth it!
-    }
 
     checkForMate(king) {
         console.log('Checking for Mate...')

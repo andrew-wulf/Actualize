@@ -4,16 +4,19 @@ export class Match {
   constructor(scene) {
     this.scene = scene;
     this.moves = [];
+    this.last_move = false;
     this.current_player = 'w';
     this.mode = 'player';
     this.player1 = 'w';
     this.castles = {wk: true, wq: true, bk: true, bq: true}
+    this.passant = false;
   }
   
 
   record_move(m) {
     // console.log(m[0].type, m[1].rowCol);
     this.moves.push(m);
+    this.last_move = m;
 
     if (this.current_player == 'w') {
       this.current_player = 'b';
@@ -21,6 +24,19 @@ export class Match {
     else {
       this.current_player = 'w';
     }
+    this.passant = false;
+
+    // detect passant target
+    let pc = this.last_move[0];
+    let sq = this.last_move[1];
+    let former = this.last_move[2];
+
+    if (pc.type[1] === 'p' && Math.abs(sq.row - former.row) === 2) {
+      let factor = 1;
+      if (pc.type[0] === 'w') {factor = -1};
+      this.passant = this.scene.squares[(8 * (sq.row - factor)) + sq.col];
+    }
+    
 
     if (this.mode === 'engine' && this.current_player !== this.player1) {
       let timeout = Math.floor(Math.random() * (4000 - 1000 + 1)) + 1000;
