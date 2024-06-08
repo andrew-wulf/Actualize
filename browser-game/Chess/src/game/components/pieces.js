@@ -146,6 +146,33 @@ export class Piece extends GameObjects.Image {
         legal = false;
       }
 
+       // unique castling function
+
+       if (castle === true && legal === true) {
+        let squares = this.scene.squares;
+        let i = square.i;
+
+        let diff = square.i - former_square.i;
+        let layover = squares[square.i - (diff/  2)];
+        let res = this.move(layover, false, false, true);
+        let res2 = this.move(former_square, false, false, true);
+
+        if (res && res2) {
+          if (diff === 2) {
+            let rook = squares[i + 1].piece;
+            rook.move(squares[i - 1], false, false);
+        }
+          else {
+              let rook = squares[i - 2].piece;
+              rook.move(squares[i + 1], false, false);
+          }
+          sound = this.scene.castle;
+        }
+        else {
+          legal = false;
+        }
+      }
+      // If legal, physically move piece. if not, reset square associations.
       if (legal === false || undo === true) {
         record = false;
         this.square = former_square;
@@ -169,30 +196,13 @@ export class Piece extends GameObjects.Image {
         }
       } 
 
-      // unique castling function
-
-      if (castle === true && legal === true) {
-        let squares = this.scene.squares;
-        let i = square.i;
-
-        let diff = square.i - former_square.i;
-        if (diff === 2) {
-            let rook = squares[i + 1].piece;
-            rook.move(squares[i - 1], false, false);
-        }
-        else {
-            let rook = squares[i - 2].piece;
-            rook.move(squares[i + 1], false, false);
-        }
-        sound = this.scene.castle;
-      }
+    
 
       // setup pawn promotions
       if (this.type[1] === 'p' && (this.square.row === 7 || this.square.row === 0)) {
         this.promote();
         return
       }
-      
 
 
       // If successful check, play sound
@@ -548,10 +558,16 @@ export class Piece extends GameObjects.Image {
       // Disable all normal pieces until selection is made //
       this.scene.match.piecesInteractive(false);
 
+      let overlay = this.scene.add.image(this.scene.game.config.width / 2, this.scene.game.config.height / 2, 'overlay');
+      overlay.setDisplaySize(this.scene.game.config.width, this.scene.game.config.height);
+      overlay.setDepth(3);
+      overlay.setAlpha(0.5);
+
       console.log(this.x, this.y);
 
       types.forEach((type, i) => {
         let pc = new Piece(this.scene, this.x, this.y + (factor * (i+1)), pre + type);
+        pc.setDepth(5);
         pieces.push(pc);
 
         pc.setInteractive();
@@ -586,6 +602,7 @@ export class Piece extends GameObjects.Image {
         pc.scene.input.setDraggable(pc);
         pc.scene.pieces.push(pc);
         promoted = true;
+        overlay.destroy();
       }
 
     }
