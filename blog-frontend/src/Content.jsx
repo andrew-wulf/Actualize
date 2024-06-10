@@ -7,6 +7,9 @@ import { useEffect } from 'react';
 import { Modal } from "./Modal";
 import { PostsShow } from "./PostsShow";
 
+import { Routes, Route } from "react-router-dom";
+import { Signup } from "./Signup";
+
 
 export function Content() {
 
@@ -100,17 +103,50 @@ export function Content() {
 
   return (
     <div>
-      <PostsNew refresh={handleIndexPosts}/>
 
-      <button onClick={() => {handleShowPost(currentPost)}}>View Post</button>
-      <Modal show={isPostsShowVisible} onClose={handleClose}>
+      <Routes>
+      <Route path="/" element={
+      <div>
+        <h1>This is the Home Page!</h1>
+        <br/>
+        <h2>Nothing to see here...</h2>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+      </div>
+      } />
+      </Routes>
+      
+      <Routes>
+      <Route path="/signup" element={<Signup />} />
+      </Routes>
 
-        <PostsShow post={currentPost} nextPost={nextPost} prevPost={prevPost} refresh={handleCurrentPost}/>
-        
-      </Modal>
+      <Routes>
+      <Route path="/newpost" element={<PostsNew refresh={handleIndexPosts}/>} />
+      </Routes>
+      
+      
+      
+      <Routes>
+      <Route path="/posts" element={
+      <div>
+        <button onClick={() => {handleShowPost(currentPost)}}>View Post</button>
 
-      <button onClick={handleIndexPosts}>Get All Posts</button>
-      <PostsIndex title={"All Posts"} posts={posts} showMore={handleShowPost}/>
+        <Modal show={isPostsShowVisible} onClose={handleClose}>
+          <PostsShow post={currentPost} nextPost={nextPost} prevPost={prevPost} refresh={handleCurrentPost}/>
+        </Modal>
+    
+        <button onClick={handleIndexPosts}>Get All Posts</button>
+
+        <PostsIndex title={"All Posts"} posts={posts} showMore={handleShowPost}/>
+      </div>} />
+
+      
+      </Routes>
+      
     </div>
   );
 }

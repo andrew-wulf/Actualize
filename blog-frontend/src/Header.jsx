@@ -1,7 +1,9 @@
+import { Link } from "react-router-dom";
+
 export function Header() {
   return (
   <div className="header">
-    <a href="#">Home</a> <a href="#posts-index">All posts</a> <a href="#posts-new">New post</a>
+    <Link to="/">Home</Link> <Link to="/posts">All posts</Link> <Link to="/newpost">New post</Link> <Link to="/signup">Signup</Link>
   </div>
   )
 }
