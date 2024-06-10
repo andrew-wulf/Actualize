@@ -4,16 +4,19 @@ import { ProductsIndex } from './ProductsIndex';
 import {Modal} from './Modal.jsx';
 import { ProductsShow } from './ProductsShow.jsx';
 import { ProductsNew } from './ProductsNew.jsx';
+import { Login } from './Login.jsx';
+import { Signup } from './Signup.jsx';
 
 
 
-export function Content() {
+export function Content(props) {
 
   const [products, setProducts] = useState({});
   const [isProductVisible, setProductVisible] = useState(false);
   const [isNewProductVisible, setNewProductVisible] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({});
 
+  
 
   const [color, setColor] = useState("");
   const [material, setMaterial] = useState("");
@@ -129,11 +132,29 @@ export function Content() {
     setNewProductVisible(false);
   }
 
+  const handleSignupClose = () => {
+    props.showSignup(false);
+  }
+
+  const handleLoginClose = () => {
+    props.showLogin(false);
+  }
+
 
   return (
     <div className='content'>
+
       <button onClick={handleNewProduct}>New Item</button>
+
       <ProductsIndex data={products} showCommand={handleShowProduct}/>
+
+      <Modal show={props.signupVisible} onClose={handleSignupClose}>
+        <Signup />
+      </Modal>
+
+      <Modal show={props.loginVisible} onClose={handleLoginClose}>
+        <Login />
+      </Modal>
 
       <Modal show={isProductVisible} onClose={handleShowClose}>
         <ProductsShow currentProduct={currentProduct} updateProduct={handleUpdateProduct} deleteProduct={handleDeleteProduct} color={color} setColor={setColor} material={material} setMaterial={setMaterial} url={url} setUrl={setUrl}/>
