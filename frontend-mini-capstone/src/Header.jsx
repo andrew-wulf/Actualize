@@ -1,12 +1,19 @@
 import './Header.css'
 import axios from 'axios';
 import {useState, useEffect} from 'react';
+import { Search } from './Search';
 
 
 export function Header(props) {
 
 
   const [categories, setCategories] = useState([]);
+
+  const [searchVal, setSearchVal] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+
+  const [valCache, setValCache] = useState([]);
+  const [resultsCache, setResultsCache] = useState([]);
 
   const signOut = () => {
     delete axios.defaults.headers.common["Authorization"];
@@ -15,15 +22,46 @@ export function Header(props) {
   }
 
   const handleChange = (e) => {
-    props.setSearchVal(e.target.value);
-    if (e.target.value.length > 0) {
-      props.setSearchHeight('40%')
+    let val = e.target.value
+    setSearchVal(val);
+    if (val.length > 0) {
+      val = val.replace(' ', '%20')
+      props.lower('search');
+
+      if (valCache.includes(val)) {
+        setSearchResults(resultsCache[valCache.indexOf(val)]);
+      }
+      else {
+        search(val);
+      }
     }
     else {
-      props.setSearchHeight('0%')
+      props.reset();
     }
   }
-
+  
+  const search = (val) => {
+    console.log('Searching...')
+    axios.get(`http://localhost:3000/products/search/${val}.json`, {
+      params: {
+        limit: 5
+      }
+    })
+      .then(response => {
+        console.log(response);
+        setSearchResults(response.data);
+        let c1 = valCache;
+        let c2 = resultsCache;
+        c1.push(val);
+        c2.push(response.data);
+        setValCache(c1);
+        setResultsCache(c2);
+      })
+      .catch(error => {
+        console.log(error)
+      });
+  }
+ 
   const getCategories = () => {
     axios.get('http://localhost:3000/categories.json')
       .then(response => {
@@ -35,6 +73,16 @@ export function Header(props) {
       });
   }
   useEffect(getCategories, []);
+
+  const selectCategory = (name) => {
+    props.reset();
+    window.location.href = `/categories/${name}`
+  }
+
+
+  const handleSubmit = () => {
+    console.log(2);
+  }
 
 
   if (props.user) {
@@ -49,7 +97,9 @@ export function Header(props) {
         <div className="header">
           <h1 onClick={() => {window.location.href = "/"}}>Drew-Mart</h1>
 
-          <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={props.searchVal} onChange={handleChange}/>
+          <form onSubmit={handleSubmit}>
+            <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={searchVal} onChange={handleChange}/>
+          </form>
 
           <div className="flexbox"> 
             <h2 onClick={() => {window.location.href = "/user"}}>{msg}</h2>
@@ -60,21 +110,26 @@ export function Header(props) {
         </div>
 
         <div className='subheader'>
-          <h2>Categories</h2>
+   
+          <h2 onClick={() => {props.lower('categories')}}>Categories</h2>
           <h2 onClick={() => {window.location.href = "/deals"}}>Deals</h2>
-          
-          <div className='dropdown'>
-            {
+        </div>
 
+        <div className='categories' id="dropdown" style={{'height': props.catHeight}}>
+            {
               categories.map(cat => {
                 return (
-                  <h3>{cat.name}</h3>
+                  <div key={cat.id}>
+                    <h3 onClick={() => {selectCategory(cat.name)}}>{cat.name}</h3>
+                  </div>
                 )
               })
 
             }
-          </div>
-
+        </div>
+        
+        <div className='search-drop' style={{'visibility': props.searchVisibility}}>
+          <Search val={searchVal} products={searchResults}/>
         </div>
       </div>
     )
@@ -84,7 +139,7 @@ export function Header(props) {
     return (
     <div className="header">
       <h1 onClick={() => {window.location.href = "/"}}>Andrew's Store</h1>
-      <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={props.searchVal} onChange={handleChange}></input>
+      <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={searchVal} onChange={handleChange}></input>
       <h3 className="signInLink" onClick={() => {window.location.href = "/signin"}}>Sign In</h3>
       <h3 onClick={() => {window.location.href = "/signup"}}>Sign Up</h3>
     </div>

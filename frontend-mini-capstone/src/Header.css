@@ -1,3 +1,4 @@
+
 .header {
   background: radial-gradient(rgb(218, 170, 149), rgb(220, 163, 140));
     /* Dark overlay */
@@ -6,17 +7,18 @@
   font-size: 14px;
   width: 100vw;
   top: 0;
+  left: 0;
   height: 90px;
-  display: flex;
-  flex-direction: row;
-
+  display: grid;
+  grid-template-columns: 18% 35% 12% 10% 5%;
+  gap: 3.5%;
+  align-items: center;
+  position: fixed;
   
   
   h1 {
     color: rgb(22, 22, 22);
-    margin-left: 3vw;
-    margin-right: 4vw;
-    font-size: 32px;
+    font-size: 28px;
   }
   
 
@@ -29,27 +31,12 @@
     color: black;
   }
 
-  .img-container {
-    min-width: 50px;
-    min-width: 50px;
-    max-height: 60px;
-    min-height: 60px;
-    border-radius: 50px;
-    margin-left: 3vw;
-    align-self: center;
-  }
 
-  img {
-    width: 60px;
-  }
-
-  
 
   h2,
   h3 {
     color: #161616;
-    font-size: 26px;
-    margin-right: 3vw;
+    font-size: 20px;
     align-self: center;
     text-wrap: nowrap;
     text-decoration: none;
@@ -83,11 +70,6 @@
   h2 {
     font-size: 20px;
     color: #1e1e1e;
-    margin-left: 1.4vw;
-  }
-
-  .signInLink {
-    margin-left: 20vw;
   }
 
 }
@@ -95,13 +77,13 @@
 
 
 .subheader {
-  background-color: rgba(17, 17, 17, 0.885);
-
+  position: fixed;
+  background-color: rgb(17, 17, 17);
   font-size: 14px;
   width: 100vw;
   top: 90px;
   left: 0;
-  height: 4vh;
+  height: 30px;
   display: flex;
   flex-direction: row;
   padding: 10px 0;
@@ -109,8 +91,55 @@
   align-items: center;
   column-gap: 12vw;
 
+  h2 {
+    font-size: 20px;
+  }
   h2:hover {
     cursor: pointer;
     text-decoration: underline;
   }
+}
+
+.search-overlay {
+  position:fixed;
+  transition: 1s;
+  width: 100vw;
+  left: 0;
+}
+
+.search-drop {
+  position: fixed;
+  background-color: rgba(240, 240, 240, 0.949);
+  color: black;
+  left: 21.7vw;
+  top: 65px;
+  width: 34.6vw;
+  visibility: collapse;
+
+
+  .result-row:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    background-color: rgb(248, 248, 248);
+  }
+  .result-row {
+    align-content: center;
+  }
+}
+
+#dropdown {
+  overflow-y: scroll;
+  background-color: black;
+
+  h3:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}
+
+.categories {
+  position: fixed;
+  top: 140px;
+  left: 30vw;
+  width: 200px;
 }
