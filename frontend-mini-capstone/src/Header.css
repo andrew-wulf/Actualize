@@ -1,0 +1,116 @@
+.header {
+  background: radial-gradient(rgb(218, 170, 149), rgb(220, 163, 140));
+    /* Dark overlay */
+
+
+  font-size: 14px;
+  width: 100vw;
+  top: 0;
+  height: 90px;
+  display: flex;
+  flex-direction: row;
+
+  
+  
+  h1 {
+    color: rgb(22, 22, 22);
+    margin-left: 3vw;
+    margin-right: 4vw;
+    font-size: 32px;
+  }
+  
+
+  #searchBar {
+    min-width: 30vw;
+    height: 5vh;
+    font-size: 16px;
+    align-self: center;
+    background-color: rgb(240, 240, 240);
+    color: black;
+  }
+
+  .img-container {
+    min-width: 50px;
+    min-width: 50px;
+    max-height: 60px;
+    min-height: 60px;
+    border-radius: 50px;
+    margin-left: 3vw;
+    align-self: center;
+  }
+
+  img {
+    width: 60px;
+  }
+
+  
+
+  h2,
+  h3 {
+    color: #161616;
+    font-size: 26px;
+    margin-right: 3vw;
+    align-self: center;
+    text-wrap: nowrap;
+    text-decoration: none;
+  }
+
+  .flexbox {
+    display: flex;
+  }
+
+  .flexbox:hover {
+    cursor: pointer;
+
+    img {
+      filter: brightness(70%)
+    }
+
+    h2 {
+      text-decoration: underline;
+    }
+  }
+
+  h1:hover {
+    cursor: pointer;
+  }
+
+  h3:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+  h2 {
+    font-size: 20px;
+    color: #1e1e1e;
+    margin-left: 1.4vw;
+  }
+
+  .signInLink {
+    margin-left: 20vw;
+  }
+
+}
+
+
+
+.subheader {
+  background-color: rgba(17, 17, 17, 0.885);
+
+  font-size: 14px;
+  width: 100vw;
+  top: 90px;
+  left: 0;
+  height: 4vh;
+  display: flex;
+  flex-direction: row;
+  padding: 10px 0;
+  justify-content: center;
+  align-items: center;
+  column-gap: 12vw;
+
+  h2:hover {
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

@@ -4,10 +4,10 @@ import { ProductsIndex } from './ProductsIndex';
 import {Modal} from './Modal.jsx';
 import { ProductsShow } from './ProductsShow.jsx';
 import { ProductsNew } from './ProductsNew.jsx';
-import { Login } from './Login.jsx';
-import { Signup } from './Signup.jsx';
-
-
+import { SignUp } from './Signup.jsx';
+import { SignIn } from './SignIn.jsx';
+import { Search } from './Search.jsx';
+import { Routes, Route } from 'react-router-dom';
 
 export function Content(props) {
 
@@ -132,29 +132,59 @@ export function Content(props) {
     setNewProductVisible(false);
   }
 
-  const handleSignupClose = () => {
-    props.showSignup(false);
-  }
 
-  const handleLoginClose = () => {
-    props.showLogin(false);
-  }
+  const login = (params) => {
+    axios.post('http://localhost:3000/sessions.json', params)
+      .then(response => {
+        console.log(response);
+        axios.defaults.headers.common["Authorization"] = "Bearer " + response.data.jwt;
+        localStorage.setItem("jwt", response.data.jwt);
+        window.location.href = "/";
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
+  const signup = (params) => {
+    axios.post('http://localhost:3000/users.json', params)
+      .then(response => {
+        console.log(response);
+        login(params);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+  
 
   return (
     <div className='content'>
 
-      <button onClick={handleNewProduct}>New Item</button>
+      <div className='search-overlay' style={{'height': props.searchHeight}}>
+        <Search val={props.searchVal} products={products}/>
+      </div>
 
-      <ProductsIndex data={products} showCommand={handleShowProduct}/>
+      <div onClick={() => {props.setSearchHeight('0%')}}>
+        <Routes>
+          <Route path="/signin" element={
+            <SignIn login={login}/>}/>
+          
+          <Route path="/signup" element={<SignUp signup={signup}/>} />
+          
 
-      <Modal show={props.signupVisible} onClose={handleSignupClose}>
-        <Signup />
-      </Modal>
+          <Route path="/" element={
+            <div> 
+              <button onClick={handleNewProduct}>New Item</button>
+            
+              <ProductsIndex data={products} showCommand={handleShowProduct}/>
+            </div>
+          }/>
 
-      <Modal show={props.loginVisible} onClose={handleLoginClose}>
-        <Login />
-      </Modal>
+
+          
+        </Routes>
+      </div>
 
       <Modal show={isProductVisible} onClose={handleShowClose}>
         <ProductsShow currentProduct={currentProduct} updateProduct={handleUpdateProduct} deleteProduct={handleDeleteProduct} color={color} setColor={setColor} material={material} setMaterial={setMaterial} url={url} setUrl={setUrl}/>
@@ -164,5 +194,7 @@ export function Content(props) {
         <ProductsNew createProduct={handleCreateProduct}/>
       </Modal>
     </div>
+
+
   )
 }

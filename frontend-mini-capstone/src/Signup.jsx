@@ -1,49 +1,47 @@
-import axios from "axios";
 import { useState } from "react";
 
-export function Signup() {
-  const [errors, setErrors] = useState([]);
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setErrors([]);
-    const params = new FormData(event.target);
-    axios
-      .post("http://localhost:3000/users.json", params)
-      .then((response) => {
-        console.log(response.data);
-        event.target.reset();
-        window.location.href = "/"; // Change this to hide a modal, redirect to a specific page, etc.
-      })
-      .catch((error) => {
-        console.log(error.response.data.errors);
-        setErrors(error.response.data.errors);
-      });
-  };
+export function SignUp(props) {
+
+  const [errors, setErrors] = useState("")
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const params = new FormData(e.target);
+    
+    let pass = params.get('password');
+    let pass2 = params.get('password');
+    let first = params.get('first');
+    let last = params.get('last');
+
+    setErrors("Invalid Inputs detected. Please try again.")
+
+    if (pass === pass2) {
+      if (pass.length > 4) {
+        if (first.length > 0 && last.length > 0) {
+          setErrors("");
+          props.signup(params);
+        }
+      }
+    }
+  }
 
   return (
-    <div id="signup">
-      <h1>Signup</h1>
-      <ul>
-        {errors.map((error) => (
-          <li key={error}>{error}</li>
-        ))}
-      </ul>
-      <form onSubmit={handleSubmit}>
-        <div>
-          Name: <input name="name" type="text" />
-        </div>
-        <div>
-          Email: <input name="email" type="email" />
-        </div>
-        <div>
-          Password: <input name="password" type="password" />
-        </div>
-        <div>
-          Password confirmation: <input name="password_confirmation" type="password" />
-        </div>
-        <button type="submit">Signup</button>
+    <div className="signUp">
+      <h1>Sign Up</h1>
+      
+      <form onSubmit={handleSubmit} id="signupForm">
+        <p>{errors}</p>
+
+        <label> First Name: <input name="first" type="text"/> </label>
+        <label> Last Name: <input name="last" type="text"/> </label>
+        <label> Email: <input name="email" type="email"/> </label>
+        <label> Password: <input name="password" type="password"/> </label>
+        <label> Confirm Password: <input name="password_confirmation" type="password"/> </label>
+        <button type="submit">Submit</button>
+
       </form>
+
     </div>
-  );
+  )
 }
