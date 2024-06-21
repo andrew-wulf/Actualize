@@ -1,4 +1,4 @@
-import "./Modal.css"
+import '../css/Modal.css'
 
 export function Modal(props) {
   if (props.show) {

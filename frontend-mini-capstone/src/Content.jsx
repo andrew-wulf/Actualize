@@ -2,12 +2,15 @@ import { useState, useEffect} from 'react';
 import { Routes, Route } from 'react-router-dom';
 import axios from 'axios';
 
-import { SignUp } from './Signup.jsx';
-import { SignIn } from './SignIn.jsx';
-import { ProductsIndex } from './ProductsIndex';
-import { ProductsAll } from './ProductsAll.jsx';
-import { CategoryProducts } from './CategoryProducts.jsx';
-import { ProductsShow } from './ProductsShow.jsx';
+import { SignUp } from './User/Signup.jsx';
+import { SignIn } from './User/SignIn.jsx';
+
+import { ProductsAll } from './Products/ProductsAll.jsx';
+import { CategoryProducts } from './Products/CategoryProducts.jsx';
+import { ProductsShow } from './Products/ProductsShow.jsx';
+import { Cart } from './User/Cart.jsx';
+import { UserPage } from './User/UserPage.jsx';
+import { SearchResults } from './Products/SearchResults.jsx';
 
 
 export function Content(props) {
@@ -46,7 +49,6 @@ export function Content(props) {
 
   return (
     <div className='content'>
-
       <div onClick={props.reset}>
         <Routes>
           <Route path="/signin" element={
@@ -54,12 +56,15 @@ export function Content(props) {
           
           <Route path="/signup" element={<SignUp signup={signup}/>} />
           
-
           <Route path="/" element={<ProductsAll products={products} setProducts={setProducts}/>}/>
+          <Route path="/search/:text" element={<SearchResults />} />
 
-          <Route path="categories/:name" element={<CategoryProducts products={products} setProducts={setProducts} category={category} setCategory={setCategory}/>} />
+          <Route path="/categories/:name" element={<CategoryProducts products={products} setProducts={setProducts} category={category} setCategory={setCategory}/>} />
           
-          <Route path="products/:id" element={<ProductsShow currentProd/>} />
+          <Route path="/products/:id" element={<ProductsShow currentProd/>} />
+
+          <Route path="/cart" element={<Cart user={props.user}/>}/>
+          <Route path="/user" element={<UserPage user={props.user}/>}/>
         </Routes>
       </div>
 

@@ -1,6 +1,7 @@
-import './ProductsShow.css'
+import '../css/ProductsShow.css'
 import { useState, useEffect } from "react";
 import axios from 'axios';
+import { formatCurrency } from '../Misc/Functions';
 
 export function ProductsShow(props) {
   
@@ -57,7 +58,6 @@ export function ProductsShow(props) {
   }
 
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
     const params = new FormData(e.target);
@@ -70,11 +70,28 @@ export function ProductsShow(props) {
     props.deleteProduct();
   }
 
+
+  const addToCart = (id) => {
+  
+    axios.post(`http://localhost:3000/cart.json`, {
+        quantity: 1,
+        product_id: id
+    })
+    .then(response => {
+      console.log(response);
+      window.location.href = window.location.href; 
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
   if (currentProduct.id !== undefined) {
     let prod = currentProduct;
 
     return (
       <div className="product-show">
+        <button onClick={() => {addToCart(prod.id)}}>Add to Cart</button>
         <div className="header-grid">
 
           <div id='img-container'>
@@ -87,7 +104,7 @@ export function ProductsShow(props) {
         <p>{prod.description}</p>
 
         <div id='flexbox'>
-          <h2>{prod.price}</h2>
+          <h2>{formatCurrency(prod.price)}</h2>
           <h3>{prod.in_stock} in stock</h3>
           <h3>{prod.percent_off}% off</h3>
         </div>

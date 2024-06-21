@@ -1,6 +1,6 @@
 
 .header {
-  background: radial-gradient(rgb(218, 170, 149), rgb(220, 163, 140));
+  background: radial-gradient(rgb(13, 129, 196), rgb(7, 81, 134));
     /* Dark overlay */
 
 
@@ -10,15 +10,16 @@
   left: 0;
   height: 90px;
   display: grid;
-  grid-template-columns: 18% 35% 12% 10% 5%;
-  gap: 3.5%;
+  grid-template-columns: 18% 35% 12% 10% 8%;
+  gap: 3%;
   align-items: center;
   position: fixed;
   
   
   h1 {
-    color: rgb(22, 22, 22);
+    color: rgb(255, 255, 255);
     font-size: 28px;
+    margin: 0;
   }
   
 
@@ -35,26 +36,31 @@
 
   h2,
   h3 {
-    color: #161616;
+    color: #eaeaea;
     font-size: 20px;
     align-self: center;
-    text-wrap: nowrap;
+    text-wrap: wrap;
     text-decoration: none;
   }
-
+  h5 {
+    color: #eaeaea;
+    align-self: center;
+    text-decoration: none;
+    text-wrap: nowrap;
+  }
   .flexbox {
     display: flex;
+    column-gap: 0.2em;
   }
 
   .flexbox:hover {
     cursor: pointer;
 
-    img {
-      filter: brightness(70%)
-    }
-
-    h2 {
+    h5 {
       text-decoration: underline;
+    }
+    h1 {
+      color: rgb(146, 174, 199);
     }
   }
 
@@ -69,7 +75,7 @@
 
   h2 {
     font-size: 20px;
-    color: #1e1e1e;
+    color: #002a4f;
   }
 
 }
@@ -78,7 +84,7 @@
 
 .subheader {
   position: fixed;
-  background-color: rgb(17, 17, 17);
+  background-color: rgb(12, 54, 94);
   font-size: 14px;
   width: 100vw;
   top: 90px;
@@ -86,13 +92,14 @@
   height: 30px;
   display: flex;
   flex-direction: row;
-  padding: 10px 0;
+  padding: 20px;
   justify-content: center;
   align-items: center;
   column-gap: 12vw;
 
   h2 {
     font-size: 20px;
+    color:rgb(242, 242, 242);
   }
   h2:hover {
     cursor: pointer;
@@ -129,9 +136,10 @@
 
 #dropdown {
   overflow-y: scroll;
-  background-color: black;
+  background-color: rgb(22, 53, 93);
+  color: rgb(242, 242, 242);
 
-  h3:hover {
+  h4:hover {
     cursor: pointer;
     text-decoration: underline;
   }
@@ -139,7 +147,10 @@
 
 .categories {
   position: fixed;
-  top: 140px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.2em;
+  top: 130px;
   left: 30vw;
   width: 200px;
 }

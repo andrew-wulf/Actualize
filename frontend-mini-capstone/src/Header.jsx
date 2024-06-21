@@ -1,7 +1,9 @@
-import './Header.css'
+import './css/Header.css'
 import axios from 'axios';
 import {useState, useEffect} from 'react';
-import { Search } from './Search';
+import { Search } from './Misc/Search';
+
+import { FaCartPlus } from "react-icons/fa";
 
 
 export function Header(props) {
@@ -80,8 +82,11 @@ export function Header(props) {
   }
 
 
-  const handleSubmit = () => {
-    console.log(2);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let text = e.target[0].value;
+    text = text.replace(' ', '%20');
+    window.location.href = `/search/${text}`;
   }
 
 
@@ -91,6 +96,12 @@ export function Header(props) {
     if (props.user.admin === true) {
       msg = msg + ' (admin)'
     }
+    let cartCount = props.user.cart_size || "";
+    if (cartCount !== "") {
+      cartCount = `(${cartCount})`
+    }
+
+    console.log(props.user)
 
     return (
       <div>
@@ -106,7 +117,10 @@ export function Header(props) {
           </div>
           
           <h3 onClick={signOut}>Sign Out</h3>
-          <h3>Cart</h3>
+          <div className='flexbox'>
+            <h1><FaCartPlus/></h1>
+            <h5 onClick={() => {window.location.href = '/cart'}}>My Cart {cartCount}</h5>
+          </div>
         </div>
 
         <div className='subheader'>
@@ -120,7 +134,7 @@ export function Header(props) {
               categories.map(cat => {
                 return (
                   <div key={cat.id}>
-                    <h3 onClick={() => {selectCategory(cat.name)}}>{cat.name}</h3>
+                    <h4 onClick={() => {selectCategory(cat.name)}}>{cat.name}</h4>
                   </div>
                 )
               })
@@ -138,7 +152,7 @@ export function Header(props) {
   else {
     return (
     <div className="header">
-      <h1 onClick={() => {window.location.href = "/"}}>Andrew's Store</h1>
+      <h1 onClick={() => {window.location.href = "/"}}>Drew-Mart</h1>
       <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={searchVal} onChange={handleChange}></input>
       <h3 className="signInLink" onClick={() => {window.location.href = "/signin"}}>Sign In</h3>
       <h3 onClick={() => {window.location.href = "/signup"}}>Sign Up</h3>
