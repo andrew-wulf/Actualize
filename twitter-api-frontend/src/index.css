@@ -1,0 +1,10 @@
+
+
+
+.sign-in {
+  margin-top: 25vh;
+  border: 2px transparent rgb(70, 70, 70);
+  border-radius: 5%;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+  padding: 5vh;
+}
