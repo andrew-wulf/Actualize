@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from "react";
 import axios from 'axios'
 
+import { Col } from "react-bootstrap";
+
 function App() {
 
   const [currentUser, setCurrentUser] = useState("");
@@ -28,7 +30,9 @@ function App() {
     }
   }
   useEffect(getUser, []);
-  
+
+
+
   return (
     <div>
       
