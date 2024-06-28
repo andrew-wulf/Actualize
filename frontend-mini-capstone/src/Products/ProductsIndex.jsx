@@ -47,7 +47,7 @@ export function ProductsIndex(props) {
   }
   
 
-  if (props.products.length > 0) {
+  if (props.products && props.products.length > 0) {
     let count = props.products.length;
     let limit = Math.min(count, (page * 50));
     let products = props.products.slice(0, limit);
@@ -59,10 +59,10 @@ export function ProductsIndex(props) {
         <div className='products'>
           {
             products.map(row => {
-              let price_row = <h4>{formatCurrency(row.total)}</h4>;
+              let price_row = <h5>{formatCurrency(row.total)}</h5>;
               if ((row.percent_off) && row.percent_off > 0) {
                 price_row = <div className="vertical-flex">         
-                              <h4 className="latter">{formatCurrency(row.total)}</h4>
+                              <h5 className="latter">{formatCurrency(row.total)}</h5>
                               <div className="flexbox">
                                 <p className="former">{formatCurrency(row.price)}</p>
                                 <p>{row.percent_off}% off</p>
@@ -88,7 +88,7 @@ export function ProductsIndex(props) {
                 <a onClick={() => {window.location.href = `/products/${row.id}`}}>{row.name}</a>
           
                 <Stack direction="horizontal" className="flexbox">
-                  <h5>{price_row}</h5>
+                  {price_row}
                   <h6 style={{'visibility': visibility}}>{message}</h6>
                 </Stack>
               

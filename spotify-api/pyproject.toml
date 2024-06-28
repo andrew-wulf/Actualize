@@ -1,0 +1,11 @@
+[project]
+name = "Spotify"
+version = "1.0.0"
+description = "Basic spotify app built from the Flask tutorial."
+dependencies = [
+    "flask",
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"

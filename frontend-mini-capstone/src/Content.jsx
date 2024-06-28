@@ -11,6 +11,7 @@ import { ProductsShow } from './Products/ProductsShow.jsx';
 import { Cart } from './User/Cart.jsx';
 import { UserPage } from './User/UserPage.jsx';
 import { SearchResults } from './Products/SearchResults.jsx';
+import { DealProducts } from './Products/DealProducts.jsx';
 
 
 export function Content(props) {
@@ -60,6 +61,8 @@ export function Content(props) {
           <Route path="/search/:text" element={<SearchResults />} />
 
           <Route path="/categories/:name" element={<CategoryProducts products={products} setProducts={setProducts} category={category} setCategory={setCategory}/>} />
+
+          <Route path="/deals" element={<DealProducts products={products} setProducts={setProducts} category={category} setCategory={setCategory}/>} />
           
           <Route path="/products/:id" element={<ProductsShow currentProd/>} />
 

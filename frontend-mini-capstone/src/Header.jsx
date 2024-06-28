@@ -109,7 +109,7 @@ export function Header(props) {
           <h1 onClick={() => {window.location.href = "/"}}>Drew-Mart</h1>
 
           <form onSubmit={handleSubmit}>
-            <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={searchVal} onChange={handleChange}/>
+            <input id="searchBar" autoComplete="off" type="search" placeholder="Search products here!" value={searchVal} onChange={handleChange}/>
           </form>
 
           <div className="flexbox"> 
@@ -151,12 +151,37 @@ export function Header(props) {
   
   else {
     return (
-    <div className="header">
-      <h1 onClick={() => {window.location.href = "/"}}>Drew-Mart</h1>
-      <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={searchVal} onChange={handleChange}></input>
-      <h3 className="signInLink" onClick={() => {window.location.href = "/signin"}}>Sign In</h3>
-      <h3 onClick={() => {window.location.href = "/signup"}}>Sign Up</h3>
+    <div>
+      <div className="header">
+        <h1 onClick={() => {window.location.href = "/"}}>Drew-Mart</h1>
+        <input id="searchBar" type="search" placeholder="Search projects, creators and categories" value={searchVal} onChange={handleChange}></input>
+        <h3 className="signInLink" onClick={() => {window.location.href = "/signin"}}>Sign In</h3>
+        <h3 onClick={() => {window.location.href = "/signup"}}>Sign Up</h3>
+      </div>
+
+      <div className='subheader'>
+        <h2 onClick={() => {props.lower('categories')}}>Categories</h2>
+        <h2 onClick={() => {window.location.href = "/deals"}}>Deals</h2>
+      </div>
+
+      <div className='categories' id="dropdown" style={{'height': props.catHeight}}>
+          {
+            categories.map(cat => {
+              return (
+                <div key={cat.id}>
+                  <h4 onClick={() => {selectCategory(cat.name)}}>{cat.name}</h4>
+                </div>
+              )
+            })
+
+          }
+      </div>
+      
+      <div className='search-drop' style={{'visibility': props.searchVisibility}}>
+        <Search val={searchVal} products={searchResults}/>
+      </div>
     </div>
+
     )
   }
       

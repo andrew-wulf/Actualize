@@ -20,6 +20,7 @@ export function SignUp(props) {
       if (pass.length > 4) {
         if (first.length > 0 && last.length > 0) {
           setErrors("");
+          params.append('name', `${first} ${last}`)
           props.signup(params);
         }
       }
